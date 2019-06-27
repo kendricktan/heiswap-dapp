@@ -1,0 +1,43 @@
+{
+  "name": "heiswap",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@drizzle-utils/core": "^0.3.0-alpha.0",
+    "@drizzle-utils/get-web3": "^0.2.1",
+    "bn.js": "^4.11.8",
+    "crypto": "^1.0.1",
+    "elliptic": "^6.5.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-scripts": "3.0.1",
+    "rimble-ui": "^0.9.3",
+    "styled-components": "^4.3.2",
+    "web3": "^1.0.0-beta.55",
+    "web3-utils": "^1.0.0-beta.55"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "flow-bin": "^0.102.0"
+  }
+}

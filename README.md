@@ -1,2 +1,4 @@
-# heiswap-dapp
-Heiswap Dapp
+# HeiSwap Frontend Repository
+
+# Development
+Code formatting uses default settings from `Prettier`
