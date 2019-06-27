@@ -38,6 +38,7 @@
     ]
   },
   "devDependencies": {
-    "flow-bin": "^0.102.0"
+    "flow-bin": "^0.102.0",
+    "prettier-eslint": "^9.0.0"
   }
 }
