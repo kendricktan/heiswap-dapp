@@ -1,12 +1,12 @@
 // @flow
-import React from "react";
+import React from 'react'
 import {
   Flex,
   Box,
   Button,
   Modal,
-  Card,
-} from "rimble-ui";
+  Card
+} from 'rimble-ui'
 
 type ModalProps = {
   isOpen: Boolean,
@@ -22,9 +22,9 @@ const StatusModal = (props: ModalProps) => {
       <Card style={{ maxWidth: '620px' }} p={0}>
         <Button.Text
           icononly
-          icon={"Close"}
-          color={"moon-gray"}
-          position={"absolute"}
+          icon={'Close'}
+          color={'moon-gray'}
+          position={'absolute'}
           top={0}
           right={0}
           mt={3}
@@ -40,8 +40,8 @@ const StatusModal = (props: ModalProps) => {
           px={4}
           py={3}
           borderTop={1}
-          borderColor={"#E8E8E8"}
-          justifyContent={"flex-end"}
+          borderColor={'#E8E8E8'}
+          justifyContent={'flex-end'}
         >
           <Button.Outline onClick={() => setIsOpen(false)}>
             Close
@@ -52,4 +52,4 @@ const StatusModal = (props: ModalProps) => {
   )
 }
 
-export default StatusModal;
+export default StatusModal
