@@ -144,6 +144,7 @@ const App = () => {
           <Flex
             px={4}
             py={3}
+            justifyContent={'stretch'}
           >
             {
               (curTab.index === 0) ? <SendPage />
