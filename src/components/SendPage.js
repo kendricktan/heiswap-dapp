@@ -6,7 +6,7 @@ const SendPage = () => {
     <Form onSubmit={() => {}} width='100%'>
       <Form.Field label='Destination Address' width={1}>
         <Form.Input
-          type='address'
+          type='text'
           placeholder='ETH / ENS Address'
           required
           width={1}
