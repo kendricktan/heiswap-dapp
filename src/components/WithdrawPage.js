@@ -22,7 +22,7 @@ const RetrievePage = () => {
         />
       </Box>
       <Button type='submit' width={1}>
-          Retrieve
+          Withdraw
       </Button>
     </Form>
   )

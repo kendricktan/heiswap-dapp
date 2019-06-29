@@ -32,7 +32,7 @@ const DepositPage = () => {
         />
       </Form.Field>
       <Button type='submit' width={1}>
-          Send
+          Deposit
       </Button>
     </Form>
   )

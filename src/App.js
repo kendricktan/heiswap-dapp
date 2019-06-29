@@ -89,15 +89,9 @@ const HeiSwapApp = () => {
       <div style={{ position: 'relative', minHeight: '100vh' }}>
         <div style={{ paddingBottom: '3.5rem' }}>
           <Flex>
-            <Box p={3} width={1 / 2}>
-              <Button.Text>
-                <img alt='logo' src={Logo} style={{ width: '16px', height: '16px', marginRight: '6px' }} />
-                Heiswap
-              </Button.Text>
-            </Box>
-            <Box p={3} width={1 / 2} style={{ textAlign: 'right' }}>
+            <Box p={3} width={1} style={{ textAlign: 'right' }}>
               {dappGateway.ethAddress === null ? (
-                <Button size='small' style={{ marginTop: '12px' }}
+                <Button size='small' style={{ marginTop: '10px' }}
                   onClick={() => {
                     if (dappGateway.ethAddress === null) {
                       (async () => {
@@ -111,7 +105,7 @@ const HeiSwapApp = () => {
                   Connect
                 </Button>
               ) : (
-                <Button.Outline size='small' style={{ marginTop: '12px' }}
+                <Button.Outline size='small' style={{ marginTop: '10px' }}
                   onClick={() => setStatusModalOpen(true)}
                 >
                   <Blockie opts={{ seed: dappGateway.ethAddress, size: 4 }} />
@@ -124,6 +118,17 @@ const HeiSwapApp = () => {
 
           <Flex>
             <Box m={'auto'} width={[1, 1 / 2]}>
+              <div style={{ margin: '0 20px 0 20px' }}>
+                <Button.Text>
+                  <img alt='logo' src={Logo} style={{ width: '16px', height: '16px', marginRight: '6px' }} />
+                  Heiswap
+                </Button.Text>
+                <div style={{ float: 'right' }}>
+                  <Button.Text>
+                  Help & FAQ
+                  </Button.Text>
+                </div>
+              </div>
               <Flex
                 px={4}
                 py={3}
