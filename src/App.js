@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect } from 'react'
 import getWeb3 from './utils/getWeb3'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import createDrizzleUtils from '@drizzle-utils/core'
 import StatusModal from './components/StatusModal'
 import Logo from './assets/key.png'
+import NotFoundPage from './components/404NotFound'
+import FAQPage from './components/FAQPage'
 import SendPage from './components/SendPage'
 import RetrievePage from './components/RetrievePage'
 import StatusPage from './components/StatusPage'
@@ -31,7 +34,7 @@ type TabState = {
   index: number
 }
 
-const App = () => {
+const HeiSwapApp = () => {
   // Dapp gateway state
   const [dappGateway: DappGateway, setDappGateway] = useState({
     web3: null,
@@ -83,112 +86,134 @@ const App = () => {
 
   return (
     <ThemeProvider>
-      <Flex>
-        <Box p={3} width={1 / 2}>
-          <Button.Text>
-            <img alt='logo' src={Logo} style={{ width: '16px', height: '16px', marginRight: '6px' }} />
-            Heiswap
-          </Button.Text>
-        </Box>
-        <Box p={3} width={1 / 2} style={{ textAlign: 'right' }}>
-          {dappGateway.ethAddress === null ? (
-            <Button size='small' style={{ marginTop: '12px' }}
-              onClick={() => {
-                if (dappGateway.ethAddress === null) {
-                  (async () => {
-                    if (!await initDappGateway()) {
-                      setStatusModalOpen(true)
+      <div style={{ position: 'relative', minHeight: '100vh' }}>
+        <div style={{ paddingBottom: '3.5rem' }}>
+          <Flex>
+            <Box p={3} width={1 / 2}>
+              <Button.Text>
+                <img alt='logo' src={Logo} style={{ width: '16px', height: '16px', marginRight: '6px' }} />
+                Heiswap
+              </Button.Text>
+            </Box>
+            <Box p={3} width={1 / 2} style={{ textAlign: 'right' }}>
+              {dappGateway.ethAddress === null ? (
+                <Button size='small' style={{ marginTop: '12px' }}
+                  onClick={() => {
+                    if (dappGateway.ethAddress === null) {
+                      (async () => {
+                        if (!await initDappGateway()) {
+                          setStatusModalOpen(true)
+                        }
+                      })()
                     }
-                  })()
+                  }}
+                >
+                  Connect
+                </Button>
+              ) : (
+                <Button.Outline size='small' style={{ marginTop: '12px' }}
+                  onClick={() => setStatusModalOpen(true)}
+                >
+                  <Blockie opts={{ seed: dappGateway.ethAddress, size: 4 }} />
+                    &nbsp;&nbsp;
+                  {dappGateway.ethAddress.slice(0, 5) + '...' + dappGateway.ethAddress.slice(-4)}
+                </Button.Outline>
+              )}
+            </Box>
+          </Flex>
+
+          <Flex>
+            <Box m={'auto'} width={[1, 1 / 2]}>
+              <Flex
+                px={4}
+                py={3}
+                borderTop={1}
+                borderBottom={1}
+                borderColor={'#E8E8E8'}
+                justifyContent={'space-between'}
+              >
+                { curTab.index === 0
+                  ? <Button>Send</Button>
+                  : <Button.Outline onClick={() => setCurTab({ index: 0 })}>Send</Button.Outline>
                 }
-              }}
-            >
-              Connect
-            </Button>
-          ) : (
-            <Button.Outline size='small' style={{ marginTop: '12px' }}
-              onClick={() => setStatusModalOpen(true)}
-            >
-              <Blockie opts={{ seed: dappGateway.ethAddress, size: 4 }} />
-                &nbsp;&nbsp;
-              {dappGateway.ethAddress.slice(0, 5) + '...' + dappGateway.ethAddress.slice(-4)}
-            </Button.Outline>
-          )}
-        </Box>
-      </Flex>
+                { curTab.index === 1
+                  ? <Button>Retrieve</Button>
+                  : <Button.Outline onClick={() => setCurTab({ index: 1 })}>Retrieve</Button.Outline>
+                }
+                { curTab.index === 2
+                  ? <Button>Status</Button>
+                  : <Button.Outline onClick={() => setCurTab({ index: 2 })}>Status</Button.Outline>
+                }
+              </Flex>
 
-      <Flex>
-        <Box m={'auto'} width={[1, 1 / 2]}>
-          <Flex
-            px={4}
-            py={3}
-            borderTop={1}
-            borderBottom={1}
-            borderColor={'#E8E8E8'}
-            justifyContent={'space-between'}
-          >
-            { curTab.index === 0
-              ? <Button>Send</Button>
-              : <Button.Outline onClick={() => setCurTab({ index: 0 })}>Send</Button.Outline>
-            }
-            { curTab.index === 1
-              ? <Button>Retrieve</Button>
-              : <Button.Outline onClick={() => setCurTab({ index: 1 })}>Retrieve</Button.Outline>
-            }
-            { curTab.index === 2
-              ? <Button>Status</Button>
-              : <Button.Outline onClick={() => setCurTab({ index: 2 })}>Status</Button.Outline>
-            }
+              <Flex
+                px={4}
+                py={3}
+                justifyContent={'stretch'}
+              >
+                {
+                  (curTab.index === 0) ? <SendPage />
+                    : (curTab.index === 1) ? <RetrievePage />
+                      : (curTab.index === 2) ? <StatusPage />
+                        : <div>Invalid Page</div>
+                }
+              </Flex>
+            </Box>
           </Flex>
 
-          <Flex
-            px={4}
-            py={3}
-            justifyContent={'stretch'}
-          >
+          <StatusModal isOpen={statusModalOpen} setIsOpen={setStatusModalOpen}>
             {
-              (curTab.index === 0) ? <SendPage />
-                : (curTab.index === 1) ? <RetrievePage />
-                  : (curTab.index === 2) ? <StatusPage />
-                    : <div>Invalid Page</div>
+              dappGateway.ethAddress === null
+                ? (
+                  <div>
+                    <Heading.h3>No Ethereum account found</Heading.h3>
+                    <br />
+                    <Text>
+                      Please visit this page in a Web3 enabled browser.{' '}
+                      <a href='https://ethereum.org/use/#_3-what-is-a-wallet-and-which-one-should-i-use'>
+                        Learn more
+                      </a>
+                    </Text>
+                  </div>
+                )
+                : (
+                  <div style={{ textAlign: 'center' }}>
+                    <Heading.h3>Connected Ethereum account</Heading.h3>
+                    <br />
+                    <Text style={{ textAlign: 'center' }}>
+                      <QR value={dappGateway.ethAddress} />
+                      <br /><br />
+                      <Input
+                        style={{ textAlign: 'center' }}
+                        width='100%'
+                        type='text' onChange={() => { }} value={dappGateway.ethAddress}
+                      />
+                    </Text>
+                  </div>
+                )
             }
-          </Flex>
-        </Box>
-      </Flex>
+          </StatusModal>
+        </div>
 
-      <StatusModal isOpen={statusModalOpen} setIsOpen={setStatusModalOpen}>
-        {
-          dappGateway.ethAddress === null
-            ? (
-              <div>
-                <Heading.h3>No Ethereum account found</Heading.h3>
-                <br />
-                <Text>
-                  Please visit this page in a Web3 enabled browser.{' '}
-                  <a href='https://ethereum.org/use/#_3-what-is-a-wallet-and-which-one-should-i-use'>
-                    Learn more
-                  </a>
-                </Text>
-              </div>
-            )
-            : (
-              <div style={{ textAlign: 'center' }}>
-                <Heading.h3>Connected Ethereum account</Heading.h3>
-                <br />
-                <Text style={{ textAlign: 'center' }}>
-                  <QR value={dappGateway.ethAddress} />
-                  <br /><br />
-                  <Input
-                    style={{ textAlign: 'center' }}
-                    width='100%'
-                    type='text' onChange={() => { }} value={dappGateway.ethAddress}
-                  />
-                </Text>
-              </div>
-            )
-        }
-      </StatusModal>
+        <div style={{ position: 'absolute', bottom: '0', width: '100%', height: '3.5rem', borderTop: '1px solid #E8E8E8' }}>
+          <Text style={{ textAlign: 'center', paddingTop: '1rem' }}>
+            Built by&nbsp;<a href='https://kndrck.co'>Kendrick Tan</a>&nbsp;|&nbsp;<a href='https://github.com/kendricktan/heiswap-dapp'>Source code</a>
+          </Text>
+        </div>
+      </div>
     </ThemeProvider>
+  )
+}
+
+const App = () => {
+  return (
+    <Router>
+      <Switch>
+        <Route exact path='/' component={HeiSwapApp} />
+        <Route exact path='/faq' component={FAQPage} />
+        <Route component={NotFoundPage} />
+      </Switch>
+    </Router>
   )
 }
 
