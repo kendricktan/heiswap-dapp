@@ -8,8 +8,8 @@ import StatusModal from './components/StatusModal'
 import Logo from './assets/key.png'
 import NotFoundPage from './components/404NotFound'
 import FAQPage from './components/FAQPage'
-import SendPage from './components/SendPage'
-import RetrievePage from './components/RetrievePage'
+import DepositPage from './components/DepositPage'
+import WithdrawPage from './components/WithdrawPage'
 import StatusPage from './components/StatusPage'
 import {
   Heading,
@@ -133,12 +133,12 @@ const HeiSwapApp = () => {
                 justifyContent={'space-between'}
               >
                 { curTab.index === 0
-                  ? <Button>Send</Button>
-                  : <Button.Outline onClick={() => setCurTab({ index: 0 })}>Send</Button.Outline>
+                  ? <Button>Deposit</Button>
+                  : <Button.Outline onClick={() => setCurTab({ index: 0 })}>Deposit</Button.Outline>
                 }
                 { curTab.index === 1
-                  ? <Button>Retrieve</Button>
-                  : <Button.Outline onClick={() => setCurTab({ index: 1 })}>Retrieve</Button.Outline>
+                  ? <Button>Withdraw</Button>
+                  : <Button.Outline onClick={() => setCurTab({ index: 1 })}>Withdraw</Button.Outline>
                 }
                 { curTab.index === 2
                   ? <Button>Status</Button>
@@ -152,8 +152,8 @@ const HeiSwapApp = () => {
                 justifyContent={'stretch'}
               >
                 {
-                  (curTab.index === 0) ? <SendPage />
-                    : (curTab.index === 1) ? <RetrievePage />
+                  (curTab.index === 0) ? <DepositPage />
+                    : (curTab.index === 1) ? <WithdrawPage />
                       : (curTab.index === 2) ? <StatusPage />
                         : <div>Invalid Page</div>
                 }

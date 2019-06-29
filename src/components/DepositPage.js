@@ -1,10 +1,10 @@
 import React from 'react'
 import { Form, Select, Button } from 'rimble-ui'
 
-const SendPage = () => {
+const DepositPage = () => {
   return (
     <Form onSubmit={() => {}} width='100%'>
-      <Form.Field label='Destination Address' width={1}>
+      <Form.Field label='Approved Withdrawal Address' width={1}>
         <Form.Input
           type='text'
           placeholder='ETH / ENS Address'
@@ -38,4 +38,4 @@ const SendPage = () => {
   )
 }
 
-export default SendPage
+export default DepositPage
