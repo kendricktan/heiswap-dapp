@@ -18,6 +18,22 @@ const FAQPage = () => {
           You may find the source code for the project <a href='https://github.com/kendricktan/heiswap-dapp'>here</a>.
         </Text>
 
+        <h3>How does it work?</h3>
+        <Text>
+          Imagine you have 5 people from group A, who all want to send $2 to 5 people in group B.
+          To avoid knowing who in particular from group A is sending money to that particular person in group B,
+          we can ask the 5 people from group A to all put their money into a pot, and ask the 5 people from
+          group B to each come and get $2 from the pot.
+          
+          <br /><br />
+
+          We only learn that group A is sending money to group B,
+          not who is sending money to who, which gives a 1/5 chance (in this scenario) of guessing who the right sender it.
+          Do it one more time and you have a 1/25 of guessing who the sender was. With each "mix", the probability of
+          guessing who the sender and receiver are decreases dramatically. That is how Heiswap is able to keep the senders and
+          receivers anonymous, but instead of a pot it uses a smart contract.
+        </Text>
+
         <br />
         <hr />
 

@@ -16,7 +16,7 @@ const RetrievePage = () => {
       <Box>
         <Form.Check
           checked
-          label={<span>Retrieve via relayer. <a href='#'>What does that mean?</a></span>}
+          label={<span>Retrieve via relayer. <a href='/faq'>What does that mean?</a></span>}
           mb={3}
           onChange={() => {}}
         />

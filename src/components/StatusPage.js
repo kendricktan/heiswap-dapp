@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Box, Button, Text } from 'rimble-ui'
+import { Form, Button } from 'rimble-ui'
 
 const StatusPage = () => {
   return (

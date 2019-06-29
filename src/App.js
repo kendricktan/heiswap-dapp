@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react'
 import getWeb3 from './utils/getWeb3'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom'
 import createDrizzleUtils from '@drizzle-utils/core'
-import StatusModal from './components/StatusModal'
+import Web3StatusModal from './components/Web3StatusModal'
 import Logo from './assets/key.png'
 import NotFoundPage from './components/404NotFound'
 import FAQPage from './components/FAQPage'
@@ -44,7 +44,7 @@ const HeiSwapApp = () => {
   })
 
   // Status Modal
-  const [statusModalOpen: Boolean, setStatusModalOpen] = useState(false)
+  const [web3StatusModal: Boolean, setweb3StatusModal] = useState(false)
 
   // "Tabs" (made with buttons)
   const [curTab: TabState, setCurTab] = useState({
@@ -96,7 +96,7 @@ const HeiSwapApp = () => {
                     if (dappGateway.ethAddress === null) {
                       (async () => {
                         if (!await initDappGateway()) {
-                          setStatusModalOpen(true)
+                          setweb3StatusModal(true)
                         }
                       })()
                     }
@@ -106,7 +106,7 @@ const HeiSwapApp = () => {
                 </Button>
               ) : (
                 <Button.Outline size='small' style={{ marginTop: '10px' }}
-                  onClick={() => setStatusModalOpen(true)}
+                  onClick={() => setweb3StatusModal(true)}
                 >
                   <Blockie opts={{ seed: dappGateway.ethAddress, size: 4 }} />
                     &nbsp;&nbsp;
@@ -121,12 +121,14 @@ const HeiSwapApp = () => {
               <div style={{ margin: '0 20px 0 20px' }}>
                 <Button.Text>
                   <img alt='logo' src={Logo} style={{ width: '16px', height: '16px', marginRight: '6px' }} />
-                  Heiswap
+                    Heiswap
                 </Button.Text>
                 <div style={{ float: 'right' }}>
-                  <Button.Text>
-                  Help & FAQ
-                  </Button.Text>
+                  <Link to='/faq'>
+                    <Button.Text>
+                      Help & FAQ
+                    </Button.Text>
+                  </Link>
                 </div>
               </div>
               <Flex
@@ -166,7 +168,7 @@ const HeiSwapApp = () => {
             </Box>
           </Flex>
 
-          <StatusModal isOpen={statusModalOpen} setIsOpen={setStatusModalOpen}>
+          <Web3StatusModal isOpen={web3StatusModal} setIsOpen={setweb3StatusModal}>
             {
               dappGateway.ethAddress === null
                 ? (
@@ -197,7 +199,7 @@ const HeiSwapApp = () => {
                   </div>
                 )
             }
-          </StatusModal>
+          </Web3StatusModal>
         </div>
 
         <div style={{ position: 'absolute', bottom: '0', width: '100%', height: '3.5rem', borderTop: '1px solid #E8E8E8' }}>

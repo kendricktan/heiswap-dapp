@@ -7,7 +7,7 @@ const DepositPage = () => {
       <Form.Field label='Approved Withdrawal Address' width={1}>
         <Form.Input
           type='text'
-          placeholder='ETH / ENS Address'
+          placeholder='ETH Address: 0x.....'
           required
           width={1}
           onChange={() => {}}
