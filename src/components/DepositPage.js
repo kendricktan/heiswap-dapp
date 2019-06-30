@@ -1,7 +1,7 @@
 // @flow
 import crypto from 'crypto'
 import React, { useState } from 'react'
-import { Loader, Card, Form, Box, Input, Modal, Flash, Select, Text, Button, Checkbox } from 'rimble-ui'
+import { Loader, Card, Form, Box, Input, Modal, Select, Text, Button, Checkbox } from 'rimble-ui'
 import { serialize, h1, bn128 } from '../utils/AltBn129'
 import { DappGateway } from '../types/DappGateway'
 
@@ -44,14 +44,6 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
 
   return (
     <div style={{ width: '100%' }}>
-      {
-        noWeb3
-          ? <Flash my={3} variant='danger'>
-            Please connect your Ethereum account to continue
-          </Flash>
-          : null
-      }
-
       <Form onSubmit={
         (e) => {
           (async () => {
@@ -75,6 +67,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
               .call()
 
             const heiTokenEst = `hei-${ethAmount}-${estRingIdx}-${randomSk}`
+            // Make sure to set heiTokenFinal to null
             setModalParams(Object.assign({}, modalParams, {
               isOpen: true,
               heiTokenEst,
@@ -222,7 +215,8 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
               </Box>
               <Input style={{ textAlign: 'center' }} width='100%' value={
                 modalParams.heiTokenFinal === null ? modalParams.heiTokenEst : modalParams.heiTokenFinal
-              } />
+              } onChange={() => {}}
+              />
             </div>
           </Box>
 

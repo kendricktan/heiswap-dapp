@@ -287,6 +287,16 @@ contract Heiswap {
 
     // Gets the current ring index
     // for the given amount of ether
+    // Used to estimate the current idx for better UX
+    function getRingMaxParticipants() public pure
+        returns (uint256)
+    {
+        return ringMaxParticipants;
+    }
+
+    // Gets the current ring index
+    // for the given amount of ether
+    // Used to estimate the current idx for better UX
     function getCurrentRingIdx(uint256 amountEther) public view
         returns (uint256)
     {

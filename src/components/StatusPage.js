@@ -1,22 +1,139 @@
-import React from 'react'
-import { Form, Button } from 'rimble-ui'
+// @flow
+import React, { useState } from 'react'
+import { Form, Button, Modal, Card, Box, Loader, Text, Pill } from 'rimble-ui'
+import { DappGateway } from '../types/DappGateway'
 
-const StatusPage = () => {
+type StatusPageModalParams = {
+  isOpen: Boolean,
+  invalidToken: Boolean,
+  maxParticipants: Number,
+  depositedParticipants: Number,
+  withdrawnParticipants: Number
+}
+
+const StatusPage = (props: { dappGateway: DappGateway }) => {
+  const { dappGateway } = props
+
+  const [heiToken, setHeiToken] = useState('')
+
+  const [modalParams: StatusPageModalParams, setModalParams] = useState({
+    isOpen: false,
+    invalidToken: false,
+    maxParticipants: null,
+    depositedParticipants: null,
+    withdrawnParticipants: null
+  })
+
+  // Disable buttons etc if web3 isn't injected
+  const noWeb3: boolean = (
+    dappGateway.web3 === null &&
+    dappGateway.drizzleUtils === null &&
+    dappGateway.attempted
+  )
+
   return (
-    <Form onSubmit={() => {}} width='100%'>
-      <Form.Field label='Token' width={1}>
-        <Form.Input
-          type='text'
-          placeholder='hei-xxxxxxxx'
-          required
-          width={1}
-          onChange={() => {}}
-        />
-      </Form.Field>
-      <Button type='submit' width={1}>
+    <div style={{ width: '100%' }}>
+      <Form onSubmit={(e) => {
+        (async () => {
+          e.preventDefault()
+
+          // Invalid heiToken
+          if (heiToken.split('-').length - 1 !== 3) {
+            setModalParams(Object.assign({}, modalParams, { isOpen: true, invalidToken: true }))
+            return
+          }
+
+          // Opens modal to display spinny progress bar
+          setModalParams(Object.assign({}, modalParams, {
+            isOpen: true,
+            invalidToken: false,
+            maxParticipants: null,
+            depositedParticipants: null,
+            withdrawnParticipants: null
+          }))
+
+          const { heiswapInstance } = dappGateway
+
+          // eslint-disable-next-line no-unused-vars
+          const [ethAmount, ringIdx, randomSk] = heiToken.split('-').slice(1)
+
+          // Deposited Participants, Withdrawn Participants
+          const participants: [Number, Number] = await heiswapInstance
+            .methods
+            .getParticipants(ethAmount, ringIdx)
+            .call()
+
+          const maxParticipants: Number = await heiswapInstance
+            .methods
+            .getRingMaxParticipants()
+            .call()
+
+          // Yay display modal status
+          setModalParams(Object.assign({}, modalParams, {
+            isOpen: true,
+            invalidToken: false,
+            maxParticipants: parseInt(maxParticipants),
+            depositedParticipants: parseInt(participants[0]),
+            withdrawnParticipants: parseInt(participants[1])
+          }))
+        })()
+      }} width='100%'>
+        <Form.Field label='Token' width={1}>
+          <Form.Input
+            type='text'
+            placeholder='hei-xxxxxxxx'
+            required
+            width={1}
+            value={heiToken}
+            onChange={(e) => setHeiToken(e.target.value)}
+          />
+        </Form.Field>
+        <Button type='submit'width={1} disabled={noWeb3}>
         Check Ring Status
-      </Button>
-    </Form>
+        </Button>
+      </Form>
+      <Modal isOpen={modalParams.isOpen}>
+        <Card style={{ maxWidth: '620px' }} p={0}>
+          <Button.Text
+            icononly
+            icon={'Close'}
+            color={'moon-gray'}
+            position={'absolute'}
+            top={0}
+            right={0}
+            mt={3}
+            mr={3}
+            onClick={() => {
+              setModalParams(Object.assign({}, modalParams, { isOpen: false }))
+            }}
+          />
+
+          <Box p={4} mb={3}>
+            <div>
+              {
+                modalParams.invalidToken
+                  ? <Text>Invalid hei-token</Text>
+                  : modalParams.withdrawnParticipants === null
+                    ? <Loader style={{ margin: 'auto' }} size='10rem' />
+                    : <div>
+                      <Text>
+                        <strong>Ring participants: </strong> {`${modalParams.depositedParticipants}/${modalParams.maxParticipants}`}
+                        &nbsp;&nbsp;
+                        {
+                          modalParams.depositedParticipants <= 1
+                            ? <Pill color='red'>Privacy not guaranteed</Pill>
+                            : modalParams.depositedParticipants <= 3
+                              ? <Pill color='primary'>Privacy somewhat guaranteed</Pill>
+                              : <Pill color='green'>Privacy strongly guaranteed</Pill>
+                        }
+                      </Text>
+                    </div>
+              }
+            </div>
+          </Box>
+        </Card>
+      </Modal>
+    </div>
   )
 }
 

@@ -1395,12 +1395,12 @@
     "1561894803721": {
       "events": {},
       "links": {},
-      "address": "0xC19077ECe1932B7D3BC7eb7f610A67b49467C36c",
-      "transactionHash": "0x20ab22661a341b4f36d8ab4ff91ff9129afeb9894d611d9a37fd74a02b6311a8"
+      "address": "0xd7F368c3E8A59D557968047C6CCBeeCA1F05eb5C",
+      "transactionHash": "0xa434a70de839d40944655d93f2676a275fa524d645e0852041102d82b0cd2975"
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-30T12:22:42.971Z",
+  "updatedAt": "2019-06-30T12:54:25.742Z",
   "devdoc": {
     "methods": {}
   },

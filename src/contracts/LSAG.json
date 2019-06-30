@@ -8731,14 +8731,14 @@
     "1561894803721": {
       "events": {},
       "links": {
-        "AltBn128": "0xaf46FB040b92209854aa8a1e9939fa0D0CB98C8B"
+        "AltBn128": "0xAd15BeF960717929f35738881313A508bEe4A238"
       },
-      "address": "0x69eEd04e0194F30E01B46ff380879d9C6F8158fD",
-      "transactionHash": "0x5cac7fd3d4f43ce0fc3e396527c714c576f5714a891faa2db0e7fcb7f36a9ac9"
+      "address": "0x7666646e535c3FDfDDBCE9F71f83e63ACF651aC8",
+      "transactionHash": "0xa9d51c59d45435b87f5862f8e99ab57fc69723da189b9b37f5c4b9a0a505ad4f"
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-30T12:22:42.948Z",
+  "updatedAt": "2019-06-30T12:54:25.722Z",
   "devdoc": {
     "methods": {}
   },

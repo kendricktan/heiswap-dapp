@@ -20,6 +20,7 @@ import {
   Button,
   Blockie,
   QR,
+  Flash,
   ThemeProvider
 } from 'rimble-ui'
 
@@ -100,6 +101,13 @@ const HeiSwapApp = () => {
     }
   })
 
+  // Display warning if no web3 found
+  const noWeb3: boolean = (
+    dappGateway.web3 === null &&
+    dappGateway.drizzleUtils === null &&
+    dappGateway.attempted
+  )
+
   return (
     <ThemeProvider>
       <div style={{ position: 'relative', minHeight: '100vh' }}>
@@ -168,6 +176,20 @@ const HeiSwapApp = () => {
                   : <Button.Outline onClick={() => setCurTab({ index: 2 })}>Status</Button.Outline>
                 }
               </Flex>
+
+              {
+                noWeb3
+                  ? <Flex
+                    px={4}
+                    py={3}
+                    justifyContent={'stretch'}
+                  >
+                    <Flash variant='danger'>
+                      Please connect your Ethereum account to continue
+                    </Flash>
+                  </Flex>
+                  : null
+              }
 
               <Flex
                 px={4}
