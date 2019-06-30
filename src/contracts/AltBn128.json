@@ -6988,10 +6988,16 @@
       "links": {},
       "address": "0xc8acc1C5Eb12e9f1e3755f879626dba8593067E6",
       "transactionHash": "0xe46e220f2f33977b3c592c4405a1e1d52b1859cbe377b1594c50dd77b16971b9"
+    },
+    "1561894803721": {
+      "events": {},
+      "links": {},
+      "address": "0xaf46FB040b92209854aa8a1e9939fa0D0CB98C8B",
+      "transactionHash": "0x96f05dc8ccc9e50558a52e60f18ee2ee99d1afb7f517df1bec0e41e6454fd658"
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-30T06:57:04.511Z",
+  "updatedAt": "2019-06-30T12:22:42.940Z",
   "devdoc": {
     "methods": {}
   },

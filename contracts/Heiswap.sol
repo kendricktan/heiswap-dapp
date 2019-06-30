@@ -285,6 +285,15 @@ contract Heiswap {
         return (r.dParticipantsNo, r.wParticipantsNo);
     }
 
+    // Gets the current ring index
+    // for the given amount of ether
+    function getCurrentRingIdx(uint256 amountEther) public view
+        returns (uint256)
+    {
+        uint256 receivedEther = floorEtherAndCheck(amountEther * 1 ether);
+        return ringsNo[receivedEther];
+    }
+
     // Floors the current ether values
     // Makes sure the values needs to in `allowedAmounts`
     function floorEtherAndCheck(uint256 receivedAmount) internal view

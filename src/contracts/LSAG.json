@@ -8727,10 +8727,18 @@
       },
       "address": "0x53B3F59eEAAE03Bda4212f7071Fb87530bD08Fee",
       "transactionHash": "0xb2ef9d3fd5dcd1a8a0a16dc43f6a4021571b336847db7ea9c0fa2299f7af23e0"
+    },
+    "1561894803721": {
+      "events": {},
+      "links": {
+        "AltBn128": "0xaf46FB040b92209854aa8a1e9939fa0D0CB98C8B"
+      },
+      "address": "0x69eEd04e0194F30E01B46ff380879d9C6F8158fD",
+      "transactionHash": "0x5cac7fd3d4f43ce0fc3e396527c714c576f5714a891faa2db0e7fcb7f36a9ac9"
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-06-30T06:57:04.517Z",
+  "updatedAt": "2019-06-30T12:22:42.948Z",
   "devdoc": {
     "methods": {}
   },
