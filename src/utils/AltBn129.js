@@ -81,7 +81,7 @@ bn128.randomPoint = (): Point => {
     ) {
       return recurse()
     }
-    return bn128.curve.point(x, y)
+    return [x, y]
   }
   return recurse()
 }
@@ -141,6 +141,13 @@ bn128.ecMul = (p: Point, s: Scalar): Point => {
   const fp = bn128.curve.point(p[0], p[1]).mul(s)
 
   return [fp.getX(), fp.getY()]
+}
+
+/**
+ * ECC multiplication operation for G
+ */
+bn128.ecMulG = (s: Scalar): Point => {
+  return bn128.ecMul(G, s)
 }
 
 /**
@@ -304,6 +311,7 @@ const h2 = (hexStr: String): Point => {
  */
 const serialize = (arr: Array<any>): String => {
   if (!Array.isArray(arr)) {
+    // eslint-disable-next-line no-throw-literal
     throw 'arr should be of type array'
   }
 
@@ -351,7 +359,7 @@ const serialize = (arr: Array<any>): String => {
 // console.log(signature[2][0].toString(10) + ", " + signature[2][1].toString(10));
 // console.log("]]");
 
-module.exports = {
+export {
   bn128,
   powmod,
   h1,

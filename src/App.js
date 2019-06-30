@@ -23,12 +23,8 @@ import {
   ThemeProvider
 } from 'rimble-ui'
 
-type DappGateway = {
-  web3: Object,
-  drizzleUtils: Object,
-  ethAddress: String, // Current ETH Address
-  attempted: Boolean // Have we attempted to connect to web3 and drizzleUtils?
-}
+import { DappGateway } from './types/DappGateway'
+import heiswapArtifact from './contracts/Heiswap.json'
 
 type TabState = {
   index: number
@@ -40,7 +36,9 @@ const HeiSwapApp = () => {
     web3: null,
     drizzleUtils: null,
     ethAddress: null,
-    attempted: false
+    attempted: false,
+    heiswapInstance: null,
+    heiswapEvent$: null
   })
 
   // Status Modal
@@ -53,20 +51,38 @@ const HeiSwapApp = () => {
 
   // Helper function to initialize web3, drizzleUtils, and the ETH accounts
   const initDappGateway = async (): Boolean => {
+    // Already initialized
+    if (dappGateway.web3 !== null && dappGateway.drizzleUtils !== null && dappGateway.ethAddress !== null) {
+      return true
+    }
+
     try {
       const web3 = await getWeb3()
       const drizzleUtils = await createDrizzleUtils({ web3 })
       const accounts = await drizzleUtils.getAccounts()
+      const heiswapInstance = await drizzleUtils.getContractInstance({ artifact: heiswapArtifact })
+      const heiswapEvent$ = await drizzleUtils.createEvent$({ artifact: heiswapArtifact })
 
       setDappGateway({
         web3,
         drizzleUtils,
         ethAddress: accounts[0],
+        heiswapInstance,
+        heiswapEvent$,
         attempted: true
+      })
+
+      // Setup Account Stream
+      drizzleUtils.currentAccount$.subscribe(a => {
+        if (a !== dappGateway.ethAddress) {
+          setDappGateway(Object.assign({}, dappGateway, { ethAddress: a }))
+        }
       })
 
       return true
     } catch (err) {
+      setDappGateway(Object.assign({}, dappGateway, { attempted: true }))
+
       return false
     }
   }
@@ -159,9 +175,9 @@ const HeiSwapApp = () => {
                 justifyContent={'stretch'}
               >
                 {
-                  (curTab.index === 0) ? <DepositPage />
-                    : (curTab.index === 1) ? <WithdrawPage />
-                      : (curTab.index === 2) ? <StatusPage />
+                  (curTab.index === 0) ? <DepositPage dappGateway={dappGateway} />
+                    : (curTab.index === 1) ? <WithdrawPage dappGateway={dappGateway} />
+                      : (curTab.index === 2) ? <StatusPage dappGateway={dappGateway} />
                         : <div>Invalid Page</div>
                 }
               </Flex>

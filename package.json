@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@drizzle-utils/core": "^0.3.0-alpha.0",
-    "@drizzle-utils/get-web3": "^0.2.1",
+    "@drizzle-utils/core": "^0.3.1-alpha.0",
+    "@drizzle-utils/get-web3": "^0.2.2-alpha.0",
     "bn.js": "^4.11.8",
     "crypto": "^1.0.1",
     "elliptic": "^6.5.0",
@@ -14,8 +14,9 @@
     "react-scripts": "3.0.1",
     "rimble-ui": "^0.9.3",
     "styled-components": "^4.3.2",
-    "web3": "^1.0.0-beta.55",
-    "web3-utils": "^1.0.0-beta.55"
+    "truffle-contract": "^4.0.22",
+    "web3": "1.0.0-beta.37",
+    "web3-utils": "1.0.0-beta.37"
   },
   "scripts": {
     "start": "react-scripts start",
