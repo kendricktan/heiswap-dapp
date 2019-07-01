@@ -8,7 +8,8 @@ type StatusPageModalParams = {
   invalidToken: Boolean,
   maxParticipants: Number,
   depositedParticipants: Number,
-  withdrawnParticipants: Number
+  withdrawnParticipants: Number,
+  blocksLeftForForceClose: Number
 }
 
 const StatusPage = (props: { dappGateway: DappGateway }) => {
@@ -49,7 +50,8 @@ const StatusPage = (props: { dappGateway: DappGateway }) => {
             invalidToken: false,
             maxParticipants: null,
             depositedParticipants: null,
-            withdrawnParticipants: null
+            withdrawnParticipants: null,
+            blocksLeftForForceClose: null
           }))
 
           const { heiswapInstance } = dappGateway
@@ -68,13 +70,19 @@ const StatusPage = (props: { dappGateway: DappGateway }) => {
             .getRingMaxParticipants()
             .call()
 
+          const blocksLeftForForceClose: Number = await heiswapInstance
+            .methods
+            .getForceCloseBlocksLeft(ethAmount, ringIdx)
+            .call()
+
           // Yay display modal status
           setModalParams(Object.assign({}, modalParams, {
             isOpen: true,
             invalidToken: false,
             maxParticipants: parseInt(maxParticipants),
             depositedParticipants: parseInt(participants[0]),
-            withdrawnParticipants: parseInt(participants[1])
+            withdrawnParticipants: parseInt(participants[1]),
+            blocksLeftForForceClose: parseInt(blocksLeftForForceClose)
           }))
         })()
       }} width='100%'>
@@ -117,6 +125,14 @@ const StatusPage = (props: { dappGateway: DappGateway }) => {
                     ? <Loader style={{ margin: 'auto' }} size='10rem' />
                     : <div>
                       <Text>
+                        <strong>Ring status: </strong>{
+                          modalParams.depositedParticipants >= modalParams.maxParticipants
+                            ? 'Closed'
+                            : modalParams.blocksLeftForForceClose > 0
+                              ? `On-going (${modalParams.blocksLeftForForceClose} blocks till manual intervention allowed)`
+                              : 'On-going (Intervention allowed)'
+                        }
+                        <br />
                         <strong>Ring participants: </strong> {`${modalParams.depositedParticipants}/${modalParams.maxParticipants}`}
                         &nbsp;&nbsp;
                         {

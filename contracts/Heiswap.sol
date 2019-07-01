@@ -124,10 +124,10 @@ contract Heiswap {
         uint i;
         uint256 startGas = gasleft();
 
-        // Get amount sent
+        // Get amount sent in whole number
         uint256 withdrawEther = floorEtherAndCheck(amountEther * 1 ether);
 
-        // Gets the current ring for the amounts
+        // Gets the current ring, given the amount and idx
         Ring storage ring = rings[withdrawEther][index];
 
         // If everyone has withdrawn
@@ -136,11 +136,11 @@ contract Heiswap {
         }
 
         // Ring needs to be closed first
-        // TODO: Make sure ring is closed later on...
         if (ring.ringHash == bytes32(0x00)) {
             revert("Ring isn't closed");
         }
 
+        // Convert public key to dynamic array
         uint256[2][] memory publicKeys = new uint256[2][](ringMaxParticipants);
 
         for (i = 0; i < ringMaxParticipants; i++) {
@@ -191,8 +191,10 @@ contract Heiswap {
 
 
     // If enough blocks has passed, user can manually close the ring.
+    // To force fully close the ring
     function forceCloseRing(
-        uint256 amount, uint256 index
+        uint256 amount, uint256 index,
+        uint256 c0, uint256[2] memory keyImage, uint256[] memory s
     ) public
     {
         // Get amount sent
@@ -202,7 +204,6 @@ contract Heiswap {
         uint256 curIndex = ringsNo[receivedEther];
         Ring storage ring = rings[receivedEther][curIndex];
 
-
         if (ring.ringHash != bytes32(0x00)) {
             revert("Ring is already closed!");
         }
@@ -211,7 +212,32 @@ contract Heiswap {
             revert("Ring needs to mature longer before forcefully closing");
         }
 
+        // Convert public key to dynamic array
+        uint256[2][] memory publicKeys = new uint256[2][](ringMaxParticipants);
+
+        for (uint256 i = 0; i < ringMaxParticipants; i++) {
+            publicKeys[i] = [
+                uint256(ring.publicKeys[uint8(i)][0]),
+                uint256(ring.publicKeys[uint8(i)][1])
+            ];
+        }
+
+        // Attempts to verify ring signature
+        // for user to close ring
+        bool signatureVerified = LSAG.verify(
+            abi.encodePacked("closeRing", receivedEther, curIndex),
+            c0,
+            keyImage,
+            s,
+            publicKeys
+        );
+
+        if (!signatureVerified) {
+            revert("Invalid signature");
+        }
+
         // Close the ring
+        // (Once ring hash is there, it means ring is closed)
         ring.ringHash = createRingHash(receivedEther / (1 ether), index);
 
         // Create new ring
@@ -245,14 +271,21 @@ contract Heiswap {
         return keccak256(b);
     }
 
-    // Gets ring hash
+    // Gets ring hash needed to generate signature
     function getRingHash(uint256 amountEther, uint256 index) public view
-        returns (bytes32)
+        returns (bytes memory)
     {
         uint256 receivedEther = floorEtherAndCheck(amountEther * 1 ether);
         Ring memory r = rings[receivedEther][index];
 
-        return r.ringHash;
+        // If the ringhash hasn't been closed
+        // return the hash needed to close the
+        // ring
+        if (r.ringHash == bytes32(0x00)) {
+            return abi.encodePacked("closeRing", receivedEther, index);
+        }
+
+        return abi.encodePacked(r.ringHash);
     }
 
     // Gets all addresses in a Ring
@@ -285,9 +318,25 @@ contract Heiswap {
         return (r.dParticipantsNo, r.wParticipantsNo);
     }
 
-    // Gets the current ring index
-    // for the given amount of ether
-    // Used to estimate the current idx for better UX
+    // How many more blocks until we can force close
+    // Only allow force close every <x> blocks
+    // the ring (used in-case no one participates in the "mixing" process)
+    function getForceCloseBlocksLeft(uint256 amountEther, uint256 index) public view
+        returns (uint256)
+    {
+        uint256 receivedEther = floorEtherAndCheck(amountEther * 1 ether);
+        Ring memory r = rings[receivedEther][index];
+
+        uint256 blocksPassed = (block.number - 1 - r.createdBlockNumber);
+
+        if (blocksPassed >= minBlockNumberToCloseRing) {
+            return uint256(0);
+        }
+
+        return minBlockNumberToCloseRing - blocksPassed;
+    }
+
+    // Gets the max nunmber of ring participants
     function getRingMaxParticipants() public pure
         returns (uint256)
     {

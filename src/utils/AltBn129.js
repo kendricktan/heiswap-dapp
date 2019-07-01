@@ -13,9 +13,9 @@ const { soliditySha3, padLeft } = require('web3-utils')
 // Types
 // Since JS doesn't handle BigInteger well,
 // the scalar representation will be the a BN object
-type Scalar = BN;
-type Point = [Scalar, Scalar];
-type Signature = [Scalar, Array<Scalar>, Point];
+export type Scalar = BN;
+export type Point = [Scalar, Scalar];
+export type Signature = [Scalar, Array<Scalar>, Point];
 
 // AltBn128 field properties
 const P: Scalar = new BN(
@@ -320,6 +320,8 @@ const serialize = (arr: Array<any>): String => {
       acc = acc + Buffer.from(x).toString('hex')
     } else if (Array.isArray(x)) {
       acc = acc + serialize(x)
+    } else if (Buffer.isBuffer(x)) {
+      acc = acc + x.toString('hex')
     } else if (x.getX !== undefined && x.getY !== undefined) {
       // Point
       acc = acc + padLeft(x.getX().toString(16), 64, '0')

@@ -1,10 +1,10 @@
 pragma solidity >=0.5.0 <0.6.0;
 
-// https://github.com/ethereum/py_ecc/blob/master/py_ecc/bn128/bn128_curve.py
+/** 
+ * Heavily referenced from https://github.com/ethereum/py_ecc/blob/master/py_ecc/bn128/bn128_curve.py
+*/
 
-
-library AltBn128 {    
-    // https://github.com/ethereum/py_ecc/blob/master/py_ecc/bn128/bn128_curve.py
+library AltBn128 {
     uint256 constant public G1x = uint256(0x01);
     uint256 constant public G1y = uint256(0x02);
 
@@ -18,7 +18,6 @@ library AltBn128 {
 
     // (p+1) / 4
     uint256 constant public A = 0xc19139cb84c680a6e14116da060561765e05aa45a1c72a34f082305b61f3f52;
-    
 
     /* ECC Functions */
     function ecAdd(uint256[2] memory p0, uint256[2] memory p1) public view
