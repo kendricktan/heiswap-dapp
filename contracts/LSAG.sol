@@ -131,7 +131,7 @@ library LSAG {
             z_1 = ringCalcZ1(publicKeys[i], c, s[i]);
             z_2 = ringCalcZ2(keyImage, h, s[i], c);
 
-            if (i != publicKeys.length - 1){
+            if (i != publicKeys.length - 1) {
                 c = H1(
                     abi.encodePacked(
                         hBytes,

@@ -2,12 +2,13 @@
 import crypto from 'crypto'
 import React, { useState } from 'react'
 import { Loader, Card, Form, Box, Input, Modal, Select, Text, Button, Checkbox } from 'rimble-ui'
-import { serialize, h1, bn128 } from '../utils/AltBn129'
+import { serialize, h1, bn128 } from '../utils/AltBn128'
 import { DappGateway } from '../types/DappGateway'
 
 type DepositForumParams = {
-  ethAmount: Number,
-  ethAddress: String
+  targetEthAmount: Number,
+  targetEthAddress: String,
+  validEthAddress: Boolean
 }
 
 type ModalParams = {
@@ -21,8 +22,8 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
 
   // Form validation
   const [depForumParams: DepositForumParams, setDepForumParams] = useState({
-    ethAmount: 2,
-    ethAddress: '',
+    targetEthAmount: 2,
+    targetEthAddress: '',
     validEthAddress: false
   })
 
@@ -50,23 +51,23 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
             // No refresh
             e.preventDefault()
 
-            const { ethAmount } = depForumParams
+            const { targetEthAmount, targetEthAddress } = depForumParams
             const { ethAddress, heiswapInstance, web3 } = dappGateway
 
             // Generaete a burner secret key
             // and create a pseudo stealth address
             const randomSk = crypto.randomBytes(32).toString('hex')
             const stealthSk = h1(
-              serialize([randomSk, ethAddress])
+              serialize([randomSk, targetEthAddress])
             )
 
             // Opens modal
             const estRingIdx = await heiswapInstance
               .methods
-              .getCurrentRingIdx(ethAmount)
+              .getCurrentRingIdx(targetEthAmount)
               .call()
 
-            const heiTokenEst = `hei-${ethAmount}-${estRingIdx}-${randomSk}`
+            const heiTokenEst = `hei-${targetEthAmount}-${estRingIdx}-${randomSk}`
             // Make sure to set heiTokenFinal to null
             setModalParams(Object.assign({}, modalParams, {
               isOpen: true,
@@ -83,7 +84,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
                 .methods
                 .deposit(stealthPk)
                 .send(
-                  { from: ethAddress, value: web3.utils.toWei(ethAmount.toString(10), 'ether') }
+                  { from: ethAddress, value: web3.utils.toWei(targetEthAmount.toString(10), 'ether') }
                 )
 
               // Get event return value
@@ -94,7 +95,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
 
               // Generate token
               // Format is "hei-<ether-amount>-<idx>-<randomSk>"
-              const heiTokenFinal = `hei-${ethAmount}-${realRingIdx}-${randomSk}`
+              const heiTokenFinal = `hei-${targetEthAmount}-${realRingIdx}-${randomSk}`
 
               setModalParams(Object.assign(modalParams, {
                 isOpen: true,
@@ -116,7 +117,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
             placeholder='ETH Address: 0x.....'
             required
             width={1}
-            value={depForumParams.ethAddress}
+            value={depForumParams.targetEthAddress}
             onChange={(e) => {
               // For the little checkmark
               if (e.target.value.indexOf('0x') === 0 && e.target.value.length === 42) {
@@ -130,7 +131,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
                   {},
                   depForumParams,
                   {
-                    ethAddress: e.target.value,
+                    targetEthAddress: e.target.value,
                     validEthAddress: e.target.value.indexOf('0x') === 0 && e.target.value.length === 42
                   })
               )
@@ -144,11 +145,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
               '4',
               '8',
               '16',
-              '32',
-              '64',
-              '128',
-              '256',
-              '512'
+              '32'
             ]}
             required
             width={1}
@@ -157,7 +154,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
                 Object.assign(
                   {},
                   depForumParams,
-                  { ethAmount: e.target.value })
+                  { targetEthAmount: e.target.value })
               )
             }}
           />

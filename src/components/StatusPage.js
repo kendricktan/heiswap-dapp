@@ -6,6 +6,7 @@ import { DappGateway } from '../types/DappGateway'
 type StatusPageModalParams = {
   isOpen: Boolean,
   invalidToken: Boolean,
+  ringHash: String,
   maxParticipants: Number,
   depositedParticipants: Number,
   withdrawnParticipants: Number,
@@ -20,6 +21,7 @@ const StatusPage = (props: { dappGateway: DappGateway }) => {
   const [modalParams: StatusPageModalParams, setModalParams] = useState({
     isOpen: false,
     invalidToken: false,
+    ringHash: null,
     maxParticipants: null,
     depositedParticipants: null,
     withdrawnParticipants: null
@@ -74,11 +76,17 @@ const StatusPage = (props: { dappGateway: DappGateway }) => {
             .methods
             .getForceCloseBlocksLeft(ethAmount, ringIdx)
             .call()
+          
+          const ringHash = await heiswapInstance
+            .methods
+            .getRingHash(ethAmount, ringIdx)
+            .call()
 
           // Yay display modal status
           setModalParams(Object.assign({}, modalParams, {
             isOpen: true,
             invalidToken: false,
+            ringHash,
             maxParticipants: parseInt(maxParticipants),
             depositedParticipants: parseInt(participants[0]),
             withdrawnParticipants: parseInt(participants[1]),
@@ -126,11 +134,11 @@ const StatusPage = (props: { dappGateway: DappGateway }) => {
                     : <div>
                       <Text>
                         <strong>Ring status: </strong>{
-                          modalParams.depositedParticipants >= modalParams.maxParticipants
+                          modalParams.depositedParticipants >= modalParams.maxParticipants || modalParams.ringHash.length === 66
                             ? 'Closed'
                             : modalParams.blocksLeftForForceClose > 0
                               ? `On-going (${modalParams.blocksLeftForForceClose} blocks till manual intervention allowed)`
-                              : 'On-going (Intervention allowed)'
+                              : `On-going ${modalParams.depositedParticipants > 1 ? '(Intervention allowed)' : ''}`
                         }
                         <br />
                         <strong>Ring participants: </strong> {`${modalParams.depositedParticipants}/${modalParams.maxParticipants}`}

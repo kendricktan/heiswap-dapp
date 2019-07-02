@@ -12,7 +12,7 @@ contract Heiswap {
     // Each blockTime is ~15 seconds
     // Want 86400 seconds to pass (24 hours)
     // So 86400 / 15 = 5760 blocks, which is roughly one day
-    uint256 constant minBlockNumberToCloseRing = 5760;
+    uint256 constant minBlockNumberToCloseRing = 0; // 5760;
 
     // Maximum number of participants in a ring
     uint256 constant ringMaxParticipants = 5;
@@ -55,8 +55,7 @@ contract Heiswap {
 
     // Fixed amounts allowed to be inserted into the rings
     uint256[10] allowedAmounts = [
-        2 ether, 4 ether, 8 ether, 16 ether, 32 ether,
-        64 ether, 128 ether, 256 ether, 512 ether
+        2 ether, 4 ether, 8 ether, 16 ether, 32 ether
     ];
 
     // Mimics dynamic 'lists'
@@ -141,9 +140,11 @@ contract Heiswap {
         }
 
         // Convert public key to dynamic array
-        uint256[2][] memory publicKeys = new uint256[2][](ringMaxParticipants);
+        // Based on number of people who have
+        // deposited
+        uint256[2][] memory publicKeys = new uint256[2][](ring.dParticipantsNo);
 
-        for (i = 0; i < ringMaxParticipants; i++) {
+        for (i = 0; i < ring.dParticipantsNo; i++) {
             publicKeys[i] = [
                 uint256(ring.publicKeys[uint8(i)][0]),
                 uint256(ring.publicKeys[uint8(i)][1])
@@ -152,7 +153,7 @@ contract Heiswap {
 
         // Attempts to verify ring signature
         bool signatureVerified = LSAG.verify(
-            abi.encodePacked(ring.ringHash), // Convert to bytes
+            abi.encodePacked(ring.ringHash, receiver), // Convert to bytes
             c0,
             keyImage,
             s,
@@ -203,19 +204,26 @@ contract Heiswap {
         // Gets the current ring for the amounts
         uint256 curIndex = ringsNo[receivedEther];
         Ring storage ring = rings[receivedEther][curIndex];
+        
+        // How many blocks have passed
+        uint256 blocksPassed = (block.number - 1 - ring.createdBlockNumber);
+
+        if (ring.dParticipantsNo < 2) {
+            revert("Not enough participants!");
+        }
 
         if (ring.ringHash != bytes32(0x00)) {
             revert("Ring is already closed!");
         }
 
-        if (block.number - 1 - ring.createdBlockNumber >= minBlockNumberToCloseRing) {
+        if (blocksPassed < minBlockNumberToCloseRing) {
             revert("Ring needs to mature longer before forcefully closing");
         }
 
         // Convert public key to dynamic array
-        uint256[2][] memory publicKeys = new uint256[2][](ringMaxParticipants);
+        uint256[2][] memory publicKeys = new uint256[2][](ring.dParticipantsNo);
 
-        for (uint256 i = 0; i < ringMaxParticipants; i++) {
+        for (uint8 i = 0; i < ring.dParticipantsNo; i++) {
             publicKeys[i] = [
                 uint256(ring.publicKeys[uint8(i)][0]),
                 uint256(ring.publicKeys[uint8(i)][1])
