@@ -20,7 +20,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && mkdir -p build/faq  && cp build/index.html build/faq/index.html",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
