@@ -37,11 +37,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
   })
 
   // Disable buttons etc if web3 isn't injected
-  const noWeb3: boolean = (
-    dappGateway.web3 === null &&
-    dappGateway.drizzleUtils === null &&
-    dappGateway.attempted
-  )
+  const { noWeb3, noContractInstance } = props
 
   return (
     <div style={{ width: '100%' }}>
@@ -159,7 +155,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
             }}
           />
         </Form.Field>
-        <Button type='submit' width={1} disabled={noWeb3 || !depForumParams.validEthAddress}>
+        <Button type='submit' width={1} disabled={noWeb3 || noContractInstance || !depForumParams.validEthAddress}>
           Deposit
         </Button>
       </Form>
@@ -197,7 +193,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
                 {
                   modalParams.heiTokenFinal === null
                     ? 'Processing transaction...'
-                    : <a href={`https://etherscan.io/tx/${modalParams.txHash}`}>Transaction completed</a>
+                    : <a href={`https://ropsten.etherscan.io/tx/${modalParams.txHash}`}>Transaction completed</a>
                 }<br /><br />
                 Ensure the withdrawing party has the following hei-token. <br />
                 <strong>Losing it will make you lose access to the deposited funds.</strong>

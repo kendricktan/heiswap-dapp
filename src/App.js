@@ -61,8 +61,16 @@ const HeiSwapApp = () => {
       const web3 = await getWeb3()
       const drizzleUtils = await createDrizzleUtils({ web3 })
       const accounts = await drizzleUtils.getAccounts()
-      const heiswapInstance = await drizzleUtils.getContractInstance({ artifact: heiswapArtifact })
-      const heiswapEvent$ = await drizzleUtils.createEvent$({ artifact: heiswapArtifact })
+
+      let heiswapInstance = null; let heiswapEvent$ = null
+
+      try {
+        heiswapInstance = await drizzleUtils.getContractInstance({ artifact: heiswapArtifact })
+        heiswapEvent$ = await drizzleUtils.createEvent$({ artifact: heiswapArtifact })
+      } catch (err) {
+        heiswapInstance = null
+        heiswapEvent$ = null
+      }
 
       setDappGateway({
         web3,
@@ -106,6 +114,11 @@ const HeiSwapApp = () => {
     dappGateway.web3 === null &&
     dappGateway.drizzleUtils === null &&
     dappGateway.attempted
+  )
+
+  const noContractInstance: boolean = (
+    dappGateway.heiswapInstance === null &&
+    dappGateway.web3 !== null
   )
 
   return (
@@ -188,7 +201,17 @@ const HeiSwapApp = () => {
                       Please connect your Ethereum account to continue
                     </Flash>
                   </Flex>
-                  : null
+                  : dappGateway.heiswapInstance === null && dappGateway.web3 !== null
+                    ? <Flex
+                      px={4}
+                      py={3}
+                      justifyContent={'stretch'}
+                    >
+                      <Flash variant='danger'>
+                      Heiswap is currently only on ropsten
+                      </Flash>
+                    </Flex>
+                    : null
               }
 
               <Flex
@@ -197,9 +220,9 @@ const HeiSwapApp = () => {
                 justifyContent={'stretch'}
               >
                 {
-                  (curTab.index === 0) ? <DepositPage dappGateway={dappGateway} />
-                    : (curTab.index === 1) ? <WithdrawPage dappGateway={dappGateway} />
-                      : (curTab.index === 2) ? <StatusPage dappGateway={dappGateway} />
+                  (curTab.index === 0) ? <DepositPage dappGateway={dappGateway} noWeb3={noWeb3} noContractInstance={noContractInstance}/>
+                    : (curTab.index === 1) ? <WithdrawPage dappGateway={dappGateway} noWeb3={noWeb3} noContractInstance={noContractInstance}/>
+                      : (curTab.index === 2) ? <StatusPage dappGateway={dappGateway} noWeb3={noWeb3} noContractInstance={noContractInstance}/>
                         : <div>Invalid Page</div>
                 }
               </Flex>

@@ -28,11 +28,7 @@ const StatusPage = (props: { dappGateway: DappGateway }) => {
   })
 
   // Disable buttons etc if web3 isn't injected
-  const noWeb3: boolean = (
-    dappGateway.web3 === null &&
-    dappGateway.drizzleUtils === null &&
-    dappGateway.attempted
-  )
+  const { noWeb3, noContractInstance } = props
 
   return (
     <div style={{ width: '100%' }}>
@@ -104,7 +100,7 @@ const StatusPage = (props: { dappGateway: DappGateway }) => {
             onChange={(e) => setHeiToken(e.target.value)}
           />
         </Form.Field>
-        <Button type='submit'width={1} disabled={noWeb3}>
+        <Button type='submit'width={1} disabled={noWeb3 || noContractInstance}>
         Check Ring Status
         </Button>
       </Form>

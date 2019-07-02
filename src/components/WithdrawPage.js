@@ -40,6 +40,8 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
   const [openModal, setOpenModal] = useState(false)
   const [withdrawalState, setWithdrawalState] = useState(WITHDRAWALSTATES.Nothing)
 
+  const { noWeb3, noContractInstance } = props
+
   const getModalDisplay = (ws) => {
     if (ws === WITHDRAWALSTATES.Nothing || ws === WITHDRAWALSTATES.ForceClosingRing) {
       return <div>
@@ -255,7 +257,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
       return (
         <div>
           Withdrawal successful.&nbsp;
-          <a href={`https://etherscan.io/tx/${txReceipt.transactionHash}`}>
+          <a href={`https://ropsten.etherscan.io/tx/${txReceipt.transactionHash}`}>
             View on etherscan.
           </a>
         </div>
@@ -470,7 +472,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
             onChange={(e) => setUseRelayer(e.target.checked)}
           />
         </Box> */}
-        <Button type='submit' width={1}>
+        <Button type='submit' width={1} disabled={noWeb3 || noContractInstance}>
             Withdraw
         </Button>
       </Form>
