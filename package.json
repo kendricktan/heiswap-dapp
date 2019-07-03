@@ -14,7 +14,6 @@
     "react-scripts": "3.0.1",
     "rimble-ui": "^0.9.3",
     "styled-components": "^4.3.2",
-    "truffle-contract": "^4.0.22",
     "web3": "1.0.0-beta.37",
     "web3-utils": "1.0.0-beta.37"
   },
