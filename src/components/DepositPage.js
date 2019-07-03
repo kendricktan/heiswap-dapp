@@ -76,11 +76,18 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
 
             // Deposit into Ring
             try {
+              const gasPrice = await web3.eth.getGasPrice()
+
               const depositResult = await heiswapInstance
                 .methods
                 .deposit(stealthPk)
                 .send(
-                  { from: ethAddress, value: web3.utils.toWei(targetEthAmount.toString(10), 'ether') }
+                  {
+                    from: ethAddress,
+                    value: web3.utils.toWei(targetEthAmount.toString(10), 'ether'),
+                    gasLimit: '800000',
+                    gasPrice
+                  }
                 )
 
               // Get event return value
@@ -162,23 +169,26 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
 
       <Modal isOpen={modalParams.isOpen}>
         <Card style={{ maxWidth: '620px' }} p={0}>
-          <Button.Text
-            icononly
-            icon={'Close'}
-            color={'moon-gray'}
-            position={'absolute'}
-            top={0}
-            right={0}
-            mt={3}
-            mr={3}
-            onClick={() => {
-              // Only allow close if tx is complete
-              // and user acknowledged close
-              if (modalParams.heiToken !== null && modalParams.acknowledgeClose) {
-                setModalParams(Object.assign({}, modalParams, { isOpen: false }))
-              }
-            }}
-          />
+          {
+            modalParams.acknowledgeClose
+              ? <Button.Text
+                icononly
+                icon={'Close'}
+                color={'moon-gray'}
+                position={'absolute'}
+                top={0}
+                right={0}
+                mt={3}
+                mr={3}
+                onClick={() => {
+                  // Only allow close if tx is complete
+                  // and user acknowledged close
+                  if (modalParams.heiToken !== null && modalParams.acknowledgeClose) {
+                    setModalParams(Object.assign({}, modalParams, { isOpen: false }))
+                  }
+                }}
+              /> : null
+          }
 
           <Box p={4} mb={3}>
             <div>

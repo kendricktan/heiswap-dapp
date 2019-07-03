@@ -161,11 +161,11 @@ const HeiSwapApp = () => {
                     Heiswap
                 </Button.Text>
                 <div style={{ float: 'right' }}>
-                  <Link to='/faq'>
+                  <a href='https://kndrck.co/posts/introducing_heiswap/'>
                     <Button.Text>
                       Help & FAQ
                     </Button.Text>
-                  </Link>
+                  </a>
                 </div>
               </div>
               <Flex
