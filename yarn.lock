@@ -1200,6 +1200,22 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
+"@rimble/connection-banner@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@rimble/connection-banner/-/connection-banner-1.2.1.tgz#db9a6f23d593b21a5a22dfc92b87ae906ff0f605"
+  integrity sha512-/uvXQKcaAD17etvH+Ss2xOqCMROUulpdiPeizpRLd5FazMEFD7Hm4hsgZ2HOVG6Eh20D1uSnnq1r9lOGFH06wA==
+  dependencies:
+    "@rimble/utils" "^1.2.1"
+    rimble-ui "^0.9.1"
+
+"@rimble/utils@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@rimble/utils/-/utils-1.2.1.tgz#b078f7e697c248531f6031960ae4540bf0699415"
+  integrity sha512-Hfe1ZOD9Qj+Ac3IeSHZNrzYOMgJM6tvVgZ9eg0qKr11FfRdmbNZ0H7botum5wTMdbSCKpmge7mXHhQbBP8vcJg==
+  dependencies:
+    bowser "^2.2.0"
+    rimble-ui "^0.9.1"
+
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/@svgr/babel-plugin-add-jsx-attribute/-/babel-plugin-add-jsx-attribute-4.2.0.tgz#dadcb6218503532d6884b210e7f3c502caaa44b1"
@@ -1692,7 +1708,7 @@ ajv-keywords@^3.1.0:
   resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-3.4.0.tgz#4b831e7b531415a7cc518cd404e73f6193c6349d"
   integrity sha512-aUjdRFISbuFOl0EIZc+9e4FfZp0bDZgAdOOf30bJmw8VM9v84SHyVyxDfbWxpGYbdZD/9XoKxfHVNmxPkhwyGw==
 
-ajv@^6.1.0, ajv@^6.10.0, ajv@^6.5.5, ajv@^6.9.1:
+ajv@^6.1.0, ajv@^6.5.5, ajv@^6.9.1:
   version "6.10.0"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.10.0.tgz#90d0d54439da587cd7e843bfb7045f50bd22bdf1"
   integrity sha512-nffhOpkymDECQyR0mnsUtoCE8RlX38G0rYP+wgLWFyZuUyuuojSSvi/+euOiQBIn63whYwYVIIH1TvE3tu4OEg==
@@ -2368,11 +2384,6 @@ big.js@^5.2.2:
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
-bignumber.js@^7.2.1:
-  version "7.2.1"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-7.2.1.tgz#80c048759d826800807c4bfd521e50edbba57a5f"
-  integrity sha512-S4XzBk5sMB+Rcb/LNcpzXr57VRTxgAvaAEDAl1AwRx27j00hT84O6OkteE7u8UB3NuaaygCRrEpqox4uDOrbdQ==
-
 "bignumber.js@git+https://github.com/debris/bignumber.js.git#94d7146671b9719e00a09c29b01a691bc85048c2":
   version "2.0.7"
   resolved "git+https://github.com/debris/bignumber.js.git#94d7146671b9719e00a09c29b01a691bc85048c2"
@@ -2456,6 +2467,11 @@ boolbase@^1.0.0, boolbase@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha1-aN/1++YMUes3cl6p4+0xDcwed24=
+
+bowser@^2.2.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/bowser/-/bowser-2.4.0.tgz#fcfbca3d7659ba88afabbb8a45b33d2e4876a90c"
+  integrity sha512-DA9Opnb8S8TBLPPszrHDtCCATbAMkrxF+AxPs/d95r99frBioGpNwL1cbG3AHeV3FnoZW655vEvEryBHFeGrMg==
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -3289,11 +3305,6 @@ crypto-js@^3.1.4:
   version "3.1.8"
   resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.1.8.tgz#715f070bf6014f2ae992a98b3929258b713f08d5"
   integrity sha1-cV8HC/YBTyrpkqmLOSkli3E/CNU=
-
-crypto-js@^3.1.9-1:
-  version "3.1.9-1"
-  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.1.9-1.tgz#fda19e761fc077e01ffbfdc6e9fdfc59e8806cd8"
-  integrity sha1-/aGedh/Ad+Af+/3G6f38WeiAbNg=
 
 crypto@^1.0.1:
   version "1.0.1"
@@ -4433,7 +4444,7 @@ ethers@4.0.0-beta.1:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^4.0.0-beta.1, ethers@^4.0.27:
+ethers@^4.0.27:
   version "4.0.32"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.32.tgz#46378864cb3bf29b57c2effd17508b560743abf6"
   integrity sha512-r0k2tBNF6MYEsvwmINeP3VPppD/7eAZyiOk/ifDDawXGCKqr3iEQkPq6OZSDVD+4Jie38WPteS9thXzpn2+A5Q==
@@ -9857,6 +9868,19 @@ rgba-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/rgba-regex/-/rgba-regex-1.0.0.tgz#43374e2e2ca0968b0ef1523460b7d730ff22eeb3"
   integrity sha1-QzdOLiyglosO8VI0YLfXMP8i7rM=
 
+rimble-ui@^0.9.1:
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/rimble-ui/-/rimble-ui-0.9.4.tgz#ede6740fe7c3da5280e06bd78a7755e80ecaff3f"
+  integrity sha512-h3Oac0HgMv99OQ15xz4qChcvQDvn+9+D8F05pHWouS6suMYswCMHCaDTKbBHF3mBEHqXb9oe4OHFy9jxupc3ig==
+  dependencies:
+    "@d8660091/react-popper" "^1.0.4"
+    "@svgr/rollup" "^4.2.0"
+    ethereum-blockies "^0.1.1"
+    polished "^3.2.0"
+    qrcode.react "^0.9.3"
+    rmdi "^1.0.1"
+    styled-system "^4.1.0"
+
 rimble-ui@^0.9.3:
   version "0.9.3"
   resolved "https://registry.yarnpkg.com/rimble-ui/-/rimble-ui-0.9.3.tgz#552feed34eba2541d9d6294292b641158de5182c"
@@ -11058,36 +11082,6 @@ trough@^1.0.0:
   resolved "https://registry.yarnpkg.com/trough/-/trough-1.0.4.tgz#3b52b1f13924f460c3fbfd0df69b587dbcbc762e"
   integrity sha512-tdzBRDGWcI1OpPVmChbdSKhvSVurznZ8X36AYURAcl+0o2ldlCY2XPzyXNNxwJwwyIU+rIglTCG4kxtNKBQH7Q==
 
-truffle-blockchain-utils@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/truffle-blockchain-utils/-/truffle-blockchain-utils-0.0.10.tgz#18b772673635a95a893f7083f7be6bd62227462b"
-  integrity sha512-gVvagLCvYD0QXfnkxy6I48P6O+d7TEY0smc2VFuwldl1/clLVWE+KfBO/jFMaAz+nupTQeKvPhNTeyh3JAsCeA==
-
-truffle-contract-schema@^3.0.11:
-  version "3.0.11"
-  resolved "https://registry.yarnpkg.com/truffle-contract-schema/-/truffle-contract-schema-3.0.11.tgz#202f6982b51bcad032b7ff2a8d5837853fb69301"
-  integrity sha512-YcgSOlrufi6VtnXg8LU5Ma7JHzHpnZQxzB1PSWnb+JOTc1nL02XRoCWTgEO7PkJnFgf6yrwOpW0ajSwHk3zQ7Q==
-  dependencies:
-    ajv "^6.10.0"
-    crypto-js "^3.1.9-1"
-    debug "^4.1.0"
-
-truffle-contract@^4.0.22:
-  version "4.0.22"
-  resolved "https://registry.yarnpkg.com/truffle-contract/-/truffle-contract-4.0.22.tgz#9c6d3dd7deb05004bafde22d8aa3d394d5ea989d"
-  integrity sha512-hPSyxk9yCQQV1MgSiIFtqDgO7aw/8TJS92i7LKlcr6v7+hXTsxp1EpuhkywQMrWPSlnc08tu6PHqT5wVDIuYvg==
-  dependencies:
-    bignumber.js "^7.2.1"
-    ethers "^4.0.0-beta.1"
-    truffle-blockchain-utils "^0.0.10"
-    truffle-contract-schema "^3.0.11"
-    truffle-error "^0.0.5"
-    truffle-interface-adapter "^0.1.6"
-    web3 "1.0.0-beta.37"
-    web3-core-promievent "1.0.0-beta.37"
-    web3-eth-abi "1.0.0-beta.37"
-    web3-utils "1.0.0-beta.37"
-
 truffle-decode-utils@^1.0.14:
   version "1.0.14"
   resolved "https://registry.yarnpkg.com/truffle-decode-utils/-/truffle-decode-utils-1.0.14.tgz#25784462145e696d8cd1534ab788e67e189a2a09"
@@ -11115,11 +11109,6 @@ truffle-decoder@^3.0.1:
     utf8 "^3.0.0"
     web3 "1.0.0-beta.37"
 
-truffle-error@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/truffle-error/-/truffle-error-0.0.5.tgz#6b5740c9f3aac74f47b85d654fff7fe2c1fc5e0e"
-  integrity sha512-JpzPLMPSCE0vaZ3vH5NO5u42GpMj/Y1SRBkQ6b69PSw3xMSH1umApN32cEcg1nnh8q5FNYc5FnKu0m4tiBffyQ==
-
 truffle-hdwallet-provider@^1.0.12:
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/truffle-hdwallet-provider/-/truffle-hdwallet-provider-1.0.12.tgz#192f6eff86b3b424a78f17c2b242c37b34ff904d"
@@ -11129,14 +11118,6 @@ truffle-hdwallet-provider@^1.0.12:
     bindings "^1.3.1"
     web3 "1.0.0-beta.37"
     websocket "^1.0.28"
-
-truffle-interface-adapter@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/truffle-interface-adapter/-/truffle-interface-adapter-0.1.6.tgz#ae61f54613f3219fd8d420de57a6e457d6e81ad7"
-  integrity sha512-UFzVsbIPhE8w4b2Ywp/2xYPIOo4dtdLc2Lwa82UYg2ikf0q4/EteYLFE7hsiTgmPwmeB+L+YQZ8pqLtAa+AOgw==
-  dependencies:
-    bn.js "^4.11.8"
-    web3 "1.0.0-beta.37"
 
 ts-pnp@1.1.2, ts-pnp@^1.0.0:
   version "1.1.2"

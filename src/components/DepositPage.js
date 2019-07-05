@@ -1,7 +1,7 @@
 // @flow
 import crypto from 'crypto'
 import React, { useState } from 'react'
-import { Loader, Card, Form, Box, Input, Modal, Select, Text, Button, Checkbox } from 'rimble-ui'
+import { Loader, Card, Form, Box, Input, Modal, Select, Text, Button, Checkbox, PublicAddress, Heading, Flex } from 'rimble-ui'
 import { serialize, h1, bn128 } from '../utils/AltBn128'
 import { DappGateway } from '../types/DappGateway'
 
@@ -111,13 +111,16 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
           })()
         }
       } width='100%'>
+      <Card>
+        <Heading.h1 fontSize="3">Deposit ETH</Heading.h1>
+        <Text my="3">Enter the recipient and choose the amount of ETH you want to send privately. </Text>
         <Form.Field
           validated={depForumParams.validEthAddress}
-          label='Approved Withdrawal Address' width={1}
+          label='Recipient Ethereum address' width={1}
         >
           <Form.Input
             type='text'
-            placeholder='ETH Address: 0x.....'
+            placeholder='e.g. 0x53Nd...1Eth'
             required
             width={1}
             value={depForumParams.targetEthAddress}
@@ -141,7 +144,8 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
             }}
           />
         </Form.Field>
-        <Form.Field label='ETH Amount' width={1}>
+
+        <Form.Field label='ETH amount' width={1}>
           <Select
             items={[
               '2',
@@ -162,9 +166,12 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
             }}
           />
         </Form.Field>
+        <Text italic my="3">Transaction fees apply</Text>
+
         <Button type='submit' width={1} disabled={noWeb3 || noContractInstance || !depForumParams.validEthAddress}>
-          Deposit
+          Deposit ETH
         </Button>
+        </Card>
       </Form>
 
       <Modal isOpen={modalParams.isOpen}>
@@ -199,28 +206,30 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
               }
 
               <br />
-              <Text style={{ textAlign: 'center' }}>
+              <Text py={3} borderBottom={1} borderColor={'#E8E8E8'} mb="3" style={{ textAlign: 'center' }}>
                 {
                   modalParams.heiTokenFinal === null
-                    ? 'Processing transaction...'
-                    : <a href={`https://ropsten.etherscan.io/tx/${modalParams.txHash}`}>Transaction completed</a>
-                }<br /><br />
-                Ensure the withdrawing party has the following hei-token. <br />
-                <strong>Losing it will make you lose access to the deposited funds.</strong>
+                    ? 'Depositing ETH... make sure you have confirmed the deposit in your wallet'
+                    : <a href={`https://ropsten.etherscan.io/tx/${modalParams.txHash}`}>ETH deposited</a>
+                }
               </Text>
+
+                <Heading.h2 my="3" fontSize="3">What to do next</Heading.h2>
+                <Text>
+                Send this token to whoever you want to send your ETH to. They'll need it to withdraw their funds. </Text>
               <br />
-              <Box>
-                <Checkbox
-                  label='I have saved the hei-token somewhere safe'
-                  mb={3}
-                  onChange={(e) => { setModalParams(Object.assign({}, modalParams, { acknowledgeClose: e.target.checked })) }}
-                />
-              </Box>
-              <Input style={{ textAlign: 'center' }} width='100%' value={
+
+              <PublicAddress width='100%' label="Hei token" address={
                 modalParams.heiTokenFinal === null ? modalParams.heiTokenEst : modalParams.heiTokenFinal
-              } onChange={() => {}}
-              />
+              } onChange={() => {}} />
             </div>
+            <Box>
+              <Checkbox
+                label='I have saved/sent the Hei token'
+                mb={3}
+                onChange={(e) => { setModalParams(Object.assign({}, modalParams, { acknowledgeClose: e.target.checked })) }}
+              />
+            </Box>
           </Box>
 
         </Card>

@@ -3,7 +3,7 @@ import BN from 'bn.js'
 import { Scalar, Point, serialize, h1, bn128 } from '../utils/AltBn128'
 import { append0x } from '../utils/helper'
 import React, { useState } from 'react'
-import { Form, Modal, Card, Box, Button, Loader, Text } from 'rimble-ui'
+import { Form, Modal, Card, Box, Button, Loader, Text, Heading, Tooltip } from 'rimble-ui'
 import { DappGateway } from '../types/DappGateway'
 
 // BigNumber 0
@@ -47,10 +47,11 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
       return <div>
         <Loader style={{ margin: 'auto' }} size='10rem' />
         <br />
-        <Text style={{ textAlign: 'center' }}>Processing transaction ...</Text>
+        <Text style={{ textAlign: 'center' }}>Withdrawing ETH...</Text>
+        <Text style={{ textAlign: 'center' }}>Remember to confirm this withdrawal in your wallet.</Text>
       </div>
     } else if (ws === WITHDRAWALSTATES.CorruptedToken) {
-      return <div>Invalid token.</div>
+      return <div>This token doesn't look right. Check you've pasted it correctly and try again.</div>
     } else if (ws === WITHDRAWALSTATES.SuccessCloseRing) {
       return <div>Ring closed successfully, you can now withdraw the deposits.</div>
     } else if (ws === WITHDRAWALSTATES.FailedCloseRing) {
@@ -62,15 +63,18 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
         if (ringParticipants.deposited < 2) {
           return (
             <div>
-              Ring isn't closed yet, and there is only participant (you) in the Ring. <br /><br />
-
-              You may close the ring and withdraw the funds when there are at least two participants in the Ring.
+            <Box>
+              <Heading.h1 my="3" fontSize="4">Can't withdraw funds yet</Heading.h1>
+              <Text>Only one person has deposited ETH so your transfer won't be private. You can't withdraw your funds until at least two people have deposited ETH.</Text>
+            </Box>
             </div>
           )
         }
 
         return (
           <div>
+          <Box>
+          <Heading.h1 my="3" fontSize="4">Ready to withdraw</Heading.h1>
             <Text>
               Ring isn't closed yet, however you can manually close it.
               <br /><br />
@@ -213,7 +217,9 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
                 Close Ring
               </Button>
             </Text>
+          </Box>
           </div>
+
         )
       } else {
         return (
@@ -250,7 +256,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
     } else if (ws === WITHDRAWALSTATES.SignatureUsed) {
       return (
         <div>
-          Funds have already been withdrawn.
+          The funds have already been withdrawn using this token.
         </div>
       )
     } else if (ws === WITHDRAWALSTATES.Withdrawn) {
@@ -454,16 +460,20 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
           }
         })()
       }} width='100%'>
-        <Form.Field label='Token' width={1}>
+      <Card>
+      <Heading.h1 fontSize="3">Withdraw ETH</Heading.h1>
+      <Text my="3">Paste your Hei token to see if your funds are ready. </Text>
+        <Tooltip message="If you don't have the token, ask whoever deposited the ETH" placement="right"> <Form.Field label='Hei token' width={1}>
           <Form.Input
             type='text'
-            placeholder='hei-xxxxxxxx'
+            placeholder='e.g. hei-xxxxxxxx'
             required
             width={1}
             value={heiToken}
             onChange={(e) => setHeiToken(e.target.value)}
           />
         </Form.Field>
+        </Tooltip>
         {/* <Box>
           <Form.Check
             checked={useRelayer}
@@ -472,9 +482,11 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
             onChange={(e) => setUseRelayer(e.target.checked)}
           />
         </Box> */}
+        <Text italic my="3">You will need to pay a small transaction fee to withdraw funds.</Text>
         <Button type='submit' width={1} disabled={noWeb3 || noContractInstance}>
-            Withdraw
+            Withdraw funds
         </Button>
+      </Card>
       </Form>
 
       <Modal isOpen={openModal}>
