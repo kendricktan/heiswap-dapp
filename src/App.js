@@ -44,7 +44,8 @@ const HeiSwapApp = () => {
     ethAddress: null,
     attempted: false,
     heiswapInstance: null,
-    heiswapEvent$: null
+    heiswapEvent$: null,
+    currentNetwork: null
   })
 
   // Status Modal
@@ -77,13 +78,26 @@ const HeiSwapApp = () => {
         heiswapEvent$ = null
       }
 
+      // Get current network
+      const getCurrentNetwork = async () =>
+        web3.eth.net.getId((error, id) => {
+          if (error) {
+            console.log(error);
+            return null;
+          }
+          return id;
+        });
+
+      const currentNetwork = await getCurrentNetwork();
+
       setDappGateway({
         web3,
         drizzleUtils,
         ethAddress: accounts[0],
         heiswapInstance,
         heiswapEvent$,
-        attempted: true
+        attempted: true,
+        currentNetwork
       })
 
       // Setup Account Stream
@@ -120,12 +134,6 @@ const HeiSwapApp = () => {
     dappGateway.drizzleUtils === null &&
     dappGateway.attempted
   )
-
-  const currentNetwork: int = (
-    dappGateway.web3.eth.net.getId((error,id)=>{
-      return id
-      })
-    )
 
   const noContractInstance: boolean = (
     dappGateway.heiswapInstance === null &&
@@ -237,15 +245,11 @@ const HeiSwapApp = () => {
                     </Flex>
                     : null
               }
-              {
-                dappGateway.web3 !== null
-                ? (<ConnectionBanner
-                  currentNetwork={currentNetwork}
-                  requiredNetwork={1}
-                  onWeb3Fallback={true}
-                  />)
-                : null
-              }
+              <ConnectionBanner
+                currentNetwork={dappGateway.currentNetwork}
+                requiredNetwork={3}
+                onWeb3Fallback={false}
+              />
 
               <Flex
                 px={4}
