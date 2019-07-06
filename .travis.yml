@@ -1,0 +1,22 @@
+language: node_js
+node_js:
+  - "10"
+env:
+  - CI=true
+
+install:
+  - yarn install
+
+script:
+  - yarn test
+
+before_deploy:
+  - yarn global add netlify-cli
+  - yarn run build
+
+deploy:
+  provider: script
+  script: netlify deploy -s $NETLIFY_SITE_ID -t $NETLIFY_ACCESS_TOKEN -p ./build
+  skip_cleanup: true
+  on:
+    branch: master
