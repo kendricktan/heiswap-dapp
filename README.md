@@ -1,7 +1,12 @@
 # Heiswap Dapp
 
-[![Build Status](https://travis-ci.org/kendricktan/heiswap-dapp.svg?branch=master)](https://travis-ci.org/kendricktan/heiswap-dapp)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/25777c9c-88bd-4f98-8711-f298e28a43c7/deploy-status)](https://app.netlify.com/sites/heiswap-exchange/deploys)
+---
+
+| Branch | Status | URL |
+| --- | --- | --- |
+| master | [![Build Status](https://travis-ci.org/kendricktan/heiswap-dapp.svg?branch=master)](https://travis-ci.org/kendricktan/heiswap-dapp) | <a href="https://heiswap.exchange">heiswap.exchange</a> |
+
+---
 
 Heiswap (黑 swap) is an Ethereum transaction mixer that ultilizes parts of [CryptoNote](https://cryptonote.org) to enable zero-knowledge transactions.
 
