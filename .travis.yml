@@ -12,11 +12,11 @@ script:
 
 before_deploy:
   - yarn global add netlify-cli@2.11.23
-  - yarn run build
+  - yarn build
 
 deploy:
   provider: script
-  script: netlify deploy -s $NETLIFY_SITE_ID -a $NETLIFY_ACCESS_TOKEN -p ./build
+  script: netlify deploy -s $NETLIFY_SITE_ID -a $NETLIFY_ACCESS_TOKEN -p --dir=./build
   skip_cleanup: true
   on:
     branch: master
