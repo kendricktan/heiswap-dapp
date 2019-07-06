@@ -6,7 +6,7 @@ const NotFoundPage = () => {
     <Flex px={4} py={4}>
       <Box m={'auto'} width={[1, 1 / 2]}>
         <h1>Heiswap</h1>
-        <Heading>404 Not Found</Heading>
+        <Heading>404 - Page Not Found</Heading>
         <Text><a href='/'>Go home.</a></Text>
       </Box>
     </Flex>
