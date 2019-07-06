@@ -19,7 +19,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "(ganache-cli -k=petersburg --quiet &) && truffle test && react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -62,6 +62,7 @@
     "eslint-plugin-react": "^7.14.2",
     "eslint-plugin-standard": "^4.0.0",
     "flow-bin": "^0.102.0",
+    "ganache-cli": "^6.4.4",
     "truffle-hdwallet-provider": "^1.0.12"
   }
 }

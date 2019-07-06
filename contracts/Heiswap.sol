@@ -7,13 +7,6 @@ contract Heiswap {
     // Events
     event Deposited(address, uint256 etherAmount, uint256 idx);
 
-    // Minimum number of blocks that needs to be mined
-    // before user can forcefully close the ring
-    // Each blockTime is ~15 seconds
-    // Want 86400 seconds to pass (24 hours)
-    // So 86400 / 15 = 5760 blocks, which is roughly one day
-    uint256 constant minBlockNumberToCloseRing = 0; // 5760;
-
     // Maximum number of participants in a ring
     uint256 constant ringMaxParticipants = 5;
 
@@ -54,9 +47,7 @@ contract Heiswap {
     }
 
     // Fixed amounts allowed to be inserted into the rings
-    uint256[10] allowedAmounts = [
-        2 ether, 4 ether, 8 ether, 16 ether, 32 ether
-    ];
+    uint256[10] allowedAmounts = [ 1 ether, 2 ether, 4 ether, 8 ether, 16 ether, 32 ether ];
 
     // Mimics dynamic 'lists'
     // allowedAmount => numberOfRings (in the current amount)
@@ -216,10 +207,6 @@ contract Heiswap {
             revert("Ring is already closed!");
         }
 
-        if (blocksPassed < minBlockNumberToCloseRing) {
-            revert("Ring needs to mature longer before forcefully closing");
-        }
-
         // Convert public key to dynamic array
         uint256[2][] memory publicKeys = new uint256[2][](ring.dParticipantsNo);
 
@@ -326,24 +313,6 @@ contract Heiswap {
         return (r.dParticipantsNo, r.wParticipantsNo);
     }
 
-    // How many more blocks until we can force close
-    // Only allow force close every <x> blocks
-    // the ring (used in-case no one participates in the "mixing" process)
-    function getForceCloseBlocksLeft(uint256 amountEther, uint256 index) public view
-        returns (uint256)
-    {
-        uint256 receivedEther = floorEtherAndCheck(amountEther * 1 ether);
-        Ring memory r = rings[receivedEther][index];
-
-        uint256 blocksPassed = (block.number - 1 - r.createdBlockNumber);
-
-        if (blocksPassed >= minBlockNumberToCloseRing) {
-            return uint256(0);
-        }
-
-        return minBlockNumberToCloseRing - blocksPassed;
-    }
-
     // Gets the max nunmber of ring participants
     function getRingMaxParticipants() public pure
         returns (uint256)
@@ -382,7 +351,7 @@ contract Heiswap {
         }
 
         // Revert if ETH sent isn't in the allowed fixed amounts
-        require(allowed, "Only ETH values of 2, 4, 6, 8 ... 512 are allowed");
+        require(allowed, "Only ETH values of 1, 2, 4, 6, 8 ... 32 are allowed");
 
         return receivedEther;
     }
