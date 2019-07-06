@@ -36,7 +36,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
   const [txReceipt, setTxReceipt] = useState(null)
   const [forceCloseBlocksLeft, setForceCloseBlocksLeft] = useState(-1)
   const [heiToken, setHeiToken] = useState('')
-  const [useRelayer, setUseRelayer] = useState(false)
+  // const [useRelayer, setUseRelayer] = useState(false)
   const [openModal, setOpenModal] = useState(false)
   const [withdrawalState, setWithdrawalState] = useState(WITHDRAWALSTATES.Nothing)
 
@@ -178,36 +178,37 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
                     // TFW can't signTransaction with web3.eth.signTransaction
                     // web3 is so broken, the versioning is so fucked,
                     // the docs are so outdated. Fucking hell.
-                    if (useRelayer) {
-                      try {
-                        // TODO: Post dataBytecode to relayer
-                      } catch (exc) {
+                    // if (useRelayer) {
+                    //   try {
+                    //     // TODO: Post dataBytecode to relayer
+                    //   } catch (exc) {
+                    //   }
+                    // } else {
+                    // Broadcast the transaction otherwise
+                    try {
+                      const gas = await web3.eth.estimateGas({
+                        to: heiswapInstance._address,
+                        data: dataBytecode
+                      })
+
+                      const tx = {
+                        from: ethAddress,
+                        to: heiswapInstance._address,
+                        gas,
+                        data: dataBytecode,
+                        nonce: await web3.eth.getTransactionCount(ethAddress)
                       }
-                    } else {
-                      // Broadcast the transaction otherwise
-                      try {
-                        const gas = await web3.eth.estimateGas({
-                          to: heiswapInstance._address,
-                          data: dataBytecode
-                        })
 
-                        const tx = {
-                          from: ethAddress,
-                          to: heiswapInstance._address,
-                          gas,
-                          data: dataBytecode,
-                          nonce: await web3.eth.getTransactionCount(ethAddress)
-                        }
+                      const txR = await web3.eth.sendTransaction(tx)
 
-                        const txR = await web3.eth.sendTransaction(tx)
-
-                        setTxReceipt(txR)
-                        setWithdrawalState(WITHDRAWALSTATES.SuccessCloseRing)
-                      } catch (exc) {
-                        setWithdrawalState(WITHDRAWALSTATES.FailedCloseRing)
-                      }
+                      setTxReceipt(txR)
+                      setWithdrawalState(WITHDRAWALSTATES.SuccessCloseRing)
+                    } catch (exc) {
+                      setWithdrawalState(WITHDRAWALSTATES.FailedCloseRing)
                     }
-                  })()
+                  }
+                  // }
+                  )()
                 }}
                 width={1}>
                 Close Ring
@@ -410,49 +411,50 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
           // TFW can't signTransaction with web3.eth.signTransaction
           // web3 is so broken, the versioning is so fucked,
           // the docs are so outdated. Fucking hell.
-          if (useRelayer) {
-            try {
-              // TODO: Post dataBytecode to relayer
-            } catch (exc) {
+          // if (useRelayer) {
+          //   try {
+          //     // TODO: Post dataBytecode to relayer
+          //   } catch (exc) {
+          //   }
+          // } else {
+          // Broadcast the transaction otherwise
+          try {
+            const gas = await web3.eth.estimateGas({
+              to: heiswapInstance._address,
+              data: dataBytecode
+            })
+
+            const tx = {
+              from: ethAddress,
+              to: heiswapInstance._address,
+              gas,
+              data: dataBytecode,
+              nonce: await web3.eth.getTransactionCount(ethAddress)
             }
-          } else {
-            // Broadcast the transaction otherwise
-            try {
-              const gas = await web3.eth.estimateGas({
-                to: heiswapInstance._address,
-                data: dataBytecode
-              })
 
-              const tx = {
-                from: ethAddress,
-                to: heiswapInstance._address,
-                gas,
-                data: dataBytecode,
-                nonce: await web3.eth.getTransactionCount(ethAddress)
-              }
+            const txR = await web3.eth.sendTransaction(tx)
 
-              const txR = await web3.eth.sendTransaction(tx)
+            setTxReceipt(txR)
+            setWithdrawalState(WITHDRAWALSTATES.Withdrawn)
+          } catch (exc) {
+            const excStr = exc.toString()
 
-              setTxReceipt(txR)
-              setWithdrawalState(WITHDRAWALSTATES.Withdrawn)
-            } catch (exc) {
-              const excStr = exc.toString()
-
-              if (excStr.indexOf('Signature has been used!') !== 0) {
-                setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
-              } else if (excStr.indexOf('Invalid signature') !== 0) {
-                setWithdrawalState(WITHDRAWALSTATES.InvalidSignature)
-              } else if (excStr.indexOf('Ring isn\'t closed') !== 0) {
-                setWithdrawalState(WITHDRAWALSTATES.RingNotClosed)
-              } else if (excStr.indexOf('All funds from current Ring') !== 0) {
-                setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
-              } else {
-                setUnknownErrorStr(excStr)
-                setWithdrawalState(WITHDRAWALSTATES.UnknownError)
-              }
+            if (excStr.indexOf('Signature has been used!') !== 0) {
+              setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
+            } else if (excStr.indexOf('Invalid signature') !== 0) {
+              setWithdrawalState(WITHDRAWALSTATES.InvalidSignature)
+            } else if (excStr.indexOf('Ring isn\'t closed') !== 0) {
+              setWithdrawalState(WITHDRAWALSTATES.RingNotClosed)
+            } else if (excStr.indexOf('All funds from current Ring') !== 0) {
+              setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
+            } else {
+              setUnknownErrorStr(excStr)
+              setWithdrawalState(WITHDRAWALSTATES.UnknownError)
             }
           }
-        })()
+        }
+        // }
+        )()
       }} width='100%'>
         <Form.Field label='Token' width={1}>
           <Form.Input
