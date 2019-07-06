@@ -93,7 +93,7 @@ const StatusPage = (props: { dappGateway: DappGateway }) => {
         <Form.Field label='Token' width={1}>
           <Form.Input
             type='text'
-            placeholder='hei-xxxxxxxx'
+            placeholder='hei-x-x-xxxxxx'
             required
             width={1}
             value={heiToken}

@@ -2,11 +2,9 @@
 
 import React, { useState, useEffect } from 'react'
 import getWeb3 from './utils/getWeb3'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import createDrizzleUtils from '@drizzle-utils/core'
 import Web3StatusModal from './components/Web3StatusModal'
 import Logo from './assets/key.png'
-import NotFoundPage from './components/404NotFound'
 import DepositPage from './components/DepositPage'
 import WithdrawPage from './components/WithdrawPage'
 import StatusPage from './components/StatusPage'
@@ -274,12 +272,7 @@ const HeiSwapApp = () => {
 
 const App = () => {
   return (
-    <Router>
-      <Switch>
-        <Route exact path='/' component={HeiSwapApp} />
-        <Route component={NotFoundPage} />
-      </Switch>
-    </Router>
+    <HeiSwapApp />
   )
 }
 
