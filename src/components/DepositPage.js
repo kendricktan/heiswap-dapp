@@ -1,7 +1,7 @@
 // @flow
 import crypto from 'crypto'
 import React, { useState } from 'react'
-import { Loader, Card, Form, Box, Input, Modal, Select, Text, Button, Checkbox, PublicAddress, Heading, Flex } from 'rimble-ui'
+import { Loader, Card, Form, Icon, Box, Input, Modal, Select, Text, Button, Checkbox, PublicAddress, Heading, Flex } from 'rimble-ui'
 import { serialize, h1, bn128 } from '../utils/AltBn128'
 import { DappGateway } from '../types/DappGateway'
 
@@ -112,7 +112,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
         }
       } width='100%'>
       <Card>
-        <Heading.h1 fontSize="3">Deposit ETH</Heading.h1>
+        <Heading.h3 fontSize="3">Deposit ETH</Heading.h3>
         <Text my="3">Enter the recipient and choose the amount of ETH you want to send privately. </Text>
         <Form.Field
           validated={depForumParams.validEthAddress}
@@ -120,7 +120,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
         >
           <Form.Input
             type='text'
-            placeholder='e.g. 0x53Nd...1Eth'
+            placeholder='e.g. 0x53Nd...2Eth'
             required
             width={1}
             value={depForumParams.targetEthAddress}
@@ -202,7 +202,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
               {
                 modalParams.heiTokenFinal === null
                   ? <Loader style={{ margin: 'auto' }} size='10rem' />
-                  : null
+                  : <Icon style={{ margin: 'auto' }} color="#29B236" size="80" name="CheckCircle" />
               }
 
               <br />
@@ -210,11 +210,11 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
                 {
                   modalParams.heiTokenFinal === null
                     ? 'Depositing ETH... make sure you have confirmed the deposit in your wallet'
-                    : <a href={`https://ropsten.etherscan.io/tx/${modalParams.txHash}`}>ETH deposited</a>
+                    : <Text>ETH deposited! <a href={`https://ropsten.etherscan.io/tx/${modalParams.txHash}`}>Check on Etherscan</a></Text>
                 }
               </Text>
 
-                <Heading.h2 my="3" fontSize="3">What to do next</Heading.h2>
+                <Heading.h3 my="3" fontSize="3">What to do next</Heading.h3>
                 <Text>
                 Send this token to whoever you want to send your ETH to. They'll need it to withdraw their funds. </Text>
               <br />

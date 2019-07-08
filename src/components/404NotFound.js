@@ -7,7 +7,7 @@ const NotFoundPage = () => {
       <Box m={'auto'} width={[1, 1 / 2]}>
         <h1>Heiswap</h1>
         <Heading>404 Not Found</Heading>
-        <Text><a href='/'>Go home.</a></Text>
+        <Text><a href='/'>Go home</a></Text>
       </Box>
     </Flex>
   )

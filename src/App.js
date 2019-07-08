@@ -25,6 +25,7 @@ import {
   Flash,
   ThemeProvider,
   Card,
+  Pill,
   PublicAddress,
   EthAddress
 } from 'rimble-ui'
@@ -140,14 +141,22 @@ const HeiSwapApp = () => {
     dappGateway.web3 !== null
   )
 
+
   return (
     <ThemeProvider>
-      <div style={{ position: 'relative', minHeight: '100vh' }}>
-        <div style={{ paddingBottom: '3.5rem' }}>
-          <Flex>
-            <Box p={3} width={1} style={{ textAlign: 'right' }}>
+      <div style={{ background: '', position: 'relative', minHeight: '100vh' }}>
+        <div>
+          <Flex bg="#DED9FC" alignItems="center" mb="3">
+            <Box alignItems="center" p={2} width={1} style={{ textAlign: 'left' }}>
+              <Heading.h1 fontSize="4" my="2" mx="2">
+                <img alt='logo' src={Logo} style={{ width: '16px', height: '16px', marginRight: '6px' }} />
+                  Heiswap
+              </Heading.h1>
+            </Box>
+
+            <Box alignItems="center" p={2} width={1} style={{ textAlign: 'right' }}>
               {dappGateway.ethAddress === null ? (
-                <Button size='medium' style={{ marginTop: '5px' }}
+                <Button size='medium' my="1"
                   onClick={() => {
                     if (dappGateway.ethAddress === null) {
                       (async () => {
@@ -161,7 +170,7 @@ const HeiSwapApp = () => {
                   Connect
                 </Button>
               ) : (
-                <Button.Outline size='medium' style={{ marginTop: '5px' }}
+                <Button.Outline size='medium' my="1"
                   onClick={() => setweb3StatusModal(true)}
                 >
                 <Flex>
@@ -179,39 +188,30 @@ const HeiSwapApp = () => {
 
           <Flex>
             <Box m={'auto'} width={[1, 1 / 2]}>
-              <div style={{ margin: '0 20px 0 20px' }}>
-                <Button.Text>
-                  <img alt='logo' src={Logo} style={{ width: '16px', height: '16px', marginRight: '6px' }} />
-                    Heiswap
-                </Button.Text>
-              </div>
-
               <Box mx="3" my="3">
-              <div>
-                <Heading.h1 my="3" fontSize="3">Send ETH privately</Heading.h1>
-                <Text>Deposit your ETH into a pool and get a unique token. Once the pool is big enough, your intended recipient can use that token to withdraw their ETH privately.</Text>
-              </div>
+
+                <Heading.h2 textAlign="center" mt="3" my="3" fontSize="3">Send and receive ETH privately 🌚</Heading.h2>
+                <Text textAlign="center">Deposit any ETH you want to send into the pool in exchange for a token. Once the pool's big enough, your recipient can withdraw their ETH using the token.</Text>
+
               </Box>
               <Flex
                 px={4}
-                py={3}
-                borderTop={1}
-                borderBottom={1}
+                mx={2}
                 borderColor={'#E8E8E8'}
-                justifyContent={'space-between'}
+                justifyContent={'center'}
               >
                 { curTab.index === 0
-                  ? <Button.Text>Deposit</Button.Text>
-                  : <Button.Text onClick={() => setCurTab({ index: 0 })}>Deposit</Button.Text>
+                  ? <Pill mt={2} color="primary"><Button.Text mainColor="#110C62">Deposit</Button.Text></Pill>
+                  : <Button.Text mainColor="#988CF0" onClick={() => setCurTab({ index: 0 })}>Deposit</Button.Text>
                 }
                 { curTab.index === 1
-                  ? <Button.Text>Withdraw</Button.Text>
-                  : <Button.Text onClick={() => setCurTab({ index: 1 })}>Withdraw</Button.Text>
+                  ? <Pill mt={2} color="primary"><Button.Text mainColor="#110C62">Withdraw</Button.Text></Pill>
+                  : <Button.Text mainColor="#988CF0" onClick={() => setCurTab({ index: 1 })}>Withdraw</Button.Text>
                 }
-                { curTab.index === 2
-                  ? <Button.Text>Status</Button.Text>
-                  : <Button.Text onClick={() => setCurTab({ index: 2 })}>Status</Button.Text>
-                }
+                {/*{ curTab.index === 2
+                  ? <Button.Text mainColor="#988CF0">Status</Button.Text>
+                  : <Button.Text mainColor="#988CF0" onClick={() => setCurTab({ index: 2 })}>Status</Button.Text>
+                }*/}
               </Flex>
 
 
@@ -272,7 +272,6 @@ const HeiSwapApp = () => {
             }
           </Web3StatusModal>
         </div>
-
         <div style={{ position: 'absolute', bottom: '0', width: '100%', height: '3.5rem', borderTop: '1px solid #E8E8E8' }}>
           <Text style={{ textAlign: 'center', paddingTop: '1rem' }}>
             Built by&nbsp;<a href='https://kndrck.co'>Kendrick Tan</a>&nbsp;|&nbsp;<a href='https://github.com/kendricktan/heiswap-dapp'>Source code</a>&nbsp;|&nbsp;<a href='https://kndrck.co/posts/introducing_heiswap/'>
