@@ -45,8 +45,7 @@ const HeiSwapApp = () => {
     ethAddress: null,
     attempted: false,
     heiswapInstance: null,
-    heiswapEvent$: null,
-    currentNetwork: null
+    heiswapEvent$: null
   })
 
   // Status Modal
@@ -79,26 +78,13 @@ const HeiSwapApp = () => {
         heiswapEvent$ = null
       }
 
-      // Get current network
-      const getCurrentNetwork = async () =>
-        web3.eth.net.getId((error, id) => {
-          if (error) {
-            console.log(error);
-            return null;
-          }
-          return id;
-        });
-
-      const currentNetwork = await getCurrentNetwork();
-
       setDappGateway({
         web3,
         drizzleUtils,
         ethAddress: accounts[0],
         heiswapInstance,
         heiswapEvent$,
-        attempted: true,
-        currentNetwork
+        attempted: true
       })
 
       // Setup Account Stream
@@ -216,11 +202,29 @@ const HeiSwapApp = () => {
 
 
 
-              <ConnectionBanner
-                currentNetwork={dappGateway.currentNetwork}
-                requiredNetwork={3}
-                onWeb3Fallback={false}
-              />
+              {
+                noWeb3
+                  ? <Flex
+                    px={4}
+                    py={3}
+                    justifyContent={'stretch'}
+                  >
+                    <Flash variant='danger'>
+                      Connect your Ethereum account to continue.
+                    </Flash>
+                  </Flex>
+                  : dappGateway.heiswapInstance === null && dappGateway.web3 !== null
+                    ? <Flex
+                      px={4}
+                      py={3}
+                      justifyContent={'stretch'}
+                    >
+                      <Flash variant='danger'>
+                      Switch to the Ropsten network to use Heiswap.
+                      </Flash>
+                    </Flex>
+                    : null
+              }
 
               <Flex
                 px={4}
