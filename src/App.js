@@ -184,13 +184,6 @@ const HeiSwapApp = () => {
                   <img alt='logo' src={Logo} style={{ width: '16px', height: '16px', marginRight: '6px' }} />
                     Heiswap
                 </Button.Text>
-                <div style={{ float: 'right' }}>
-                  <a href='https://kndrck.co/posts/introducing_heiswap/'>
-                    <Button.Text>
-                      Help & FAQ
-                    </Button.Text>
-                  </a>
-                </div>
               </div>
 
               <Box mx="3" my="3">
@@ -222,29 +215,7 @@ const HeiSwapApp = () => {
               </Flex>
 
 
-              {
-                noWeb3
-                  ? <Flex
-                    px={4}
-                    py={3}
-                    justifyContent={'stretch'}
-                  >
-                    <Flash variant='danger'>
-                      Connect your Ethereum account to continue.
-                    </Flash>
-                  </Flex>
-                  : dappGateway.heiswapInstance === null && dappGateway.web3 !== null
-                    ? <Flex
-                      px={4}
-                      py={3}
-                      justifyContent={'stretch'}
-                    >
-                      <Flash variant='danger'>
-                      Switch to the Ropsten network to use Heiswap.
-                      </Flash>
-                    </Flex>
-                    : null
-              }
+
               <ConnectionBanner
                 currentNetwork={dappGateway.currentNetwork}
                 requiredNetwork={3}
@@ -304,7 +275,9 @@ const HeiSwapApp = () => {
 
         <div style={{ position: 'absolute', bottom: '0', width: '100%', height: '3.5rem', borderTop: '1px solid #E8E8E8' }}>
           <Text style={{ textAlign: 'center', paddingTop: '1rem' }}>
-            Built by&nbsp;<a href='https://kndrck.co'>Kendrick Tan</a>&nbsp;|&nbsp;<a href='https://github.com/kendricktan/heiswap-dapp'>Source code</a>
+            Built by&nbsp;<a href='https://kndrck.co'>Kendrick Tan</a>&nbsp;|&nbsp;<a href='https://github.com/kendricktan/heiswap-dapp'>Source code</a>&nbsp;|&nbsp;<a href='https://kndrck.co/posts/introducing_heiswap/'>
+                  Help & FAQ
+              </a>
           </Text>
         </div>
       </div>
