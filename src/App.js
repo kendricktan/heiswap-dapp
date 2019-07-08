@@ -11,7 +11,6 @@ import FAQPage from './components/FAQPage'
 import DepositPage from './components/DepositPage'
 import WithdrawPage from './components/WithdrawPage'
 import StatusPage from './components/StatusPage'
-import ConnectionBanner from '@rimble/connection-banner'
 
 import {
   Heading,
@@ -27,7 +26,8 @@ import {
   Card,
   Pill,
   PublicAddress,
-  EthAddress
+  EthAddress,
+  theme
 } from 'rimble-ui'
 
 import { DappGateway } from './types/DappGateway'
@@ -129,7 +129,7 @@ const HeiSwapApp = () => {
 
 
   return (
-    <ThemeProvider>
+    <ThemeProvider theme={theme}>
       <div style={{ background: '', position: 'relative', minHeight: '100vh' }}>
         <div>
           <Flex bg="#DED9FC" alignItems="center" mb="3">
