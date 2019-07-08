@@ -40,6 +40,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
   const [openModal, setOpenModal] = useState(false)
   const [withdrawalState, setWithdrawalState] = useState(WITHDRAWALSTATES.Nothing)
 
+
   const { noWeb3, noContractInstance } = props
 
   const getModalDisplay = (ws) => {
@@ -47,15 +48,17 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
       return <div>
       <Loader style={{ margin: 'auto' }} size='10rem' />
       <br />
-      <Text style={{ textAlign: 'center' }}>Withdrawing ETH...</Text>
+      <Text bold style={{ textAlign: 'center' }}>Withdrawing ETH... </Text>
       <Text style={{ textAlign: 'center' }}>Remember to confirm this withdrawal in your wallet.</Text>
     </div>
     } else if (ws === WITHDRAWALSTATES.ForceClosingRing) {
       return <div>
+        <Box>
         <Loader style={{ margin: 'auto' }} size='10rem' />
         <br />
-        <Text style={{ textAlign: 'center' }}>Closing pool...</Text>
+        <Text bold style={{ textAlign: 'center' }}>Closing pool...</Text>
         <Text style={{ textAlign: 'center' }}>Remember to confirm this in your wallet.</Text>
+        </Box>
       </div>
     } else if (ws === WITHDRAWALSTATES.CorruptedToken) {
       return <div>This token doesn't look right. Check you've pasted it correctly and try again.</div>
@@ -69,7 +72,14 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
         </div>
         )
     } else if (ws === WITHDRAWALSTATES.FailedCloseRing) {
-      return <div>Failed to close ring. Likely an invalid signature or Ring isn't mature enough.</div>
+      return (
+      <div>
+      <Box>
+        <Heading.h3 my="3" fontSize="4">Couldn't close pool</Heading.h3>
+        <Text>If you recently tried closing the pool, it may still be closing in the background. Please wait a few minutes and try your withdrawal again.</Text>
+      </Box>
+      </div>
+      )
     } else if (ws === WITHDRAWALSTATES.RingNotClosed) {
       // User can close it themselves
       if (forceCloseBlocksLeft === 0) {
@@ -78,7 +88,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
           return (
             <div>
             <Box>
-              <Heading.h3 my="3" fontSize="4">Can't withdraw funds yet</Heading.h3>
+              <Heading.h3 my="3" fontSize="4">Can't withdraw ETH yet</Heading.h3>
               <Text>Your ETH is the only ETH currently in the pool so your withdrawal won't be private. Please wait until more ETH has been deposited.</Text>
             </Box>
             </div>
@@ -100,7 +110,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
                     ? <Text>If you close the pool now your withdrawal will be <strong>somewhat</strong> private. For more privacy, wait for the pool to get bigger.</Text>
                     : <Text>Withdrawing your ETH will be <strong>completely</strong> private.</Text>
               }
-            <Text italic my={3}>Closing the pool will cost a small transaction fee</Text>
+            <Text italic my={3}>Closing the pool will cost you a small transaction fee</Text>
               <Flex mt={4} justifyContent="space-between">
               <Box mr={2} width={1/2}>
               <Button
@@ -108,7 +118,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
                 onClick={() => {
                   (async () => {
                     // Reset state
-                    setWithdrawalState(WITHDRAWALSTATES.Nothing)
+                    setWithdrawalState(WITHDRAWALSTATES.ForceClosingRing)
 
                     // Invalid heiToken
                     const { ethAddress, heiswapInstance, web3 } = dappGateway
@@ -235,6 +245,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
               </Box>
               <Box ml={2} width={1/2}>
                 <Button.Outline
+                  onClick={() => setOpenModal(false)}
                   width={1}>Wait
                 </Button.Outline>
               </Box>
@@ -256,7 +267,10 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
     } else if (ws === WITHDRAWALSTATES.RingNotEnoughParticipantsToClose) {
       return (
         <div>
-          Needs at least one more participant in your Ring before you can close it manually.
+        <Box>
+          <Heading.h3 my="3" fontSize="4">Couldn't close pool</Heading.h3>
+          <Text>There's not enough ETH in this pool right now to make your withdrawal private. Please try again later.</Text>
+        </Box>
         </div>
       )
     } else if (ws === WITHDRAWALSTATES.InvalidRing) {
@@ -292,9 +306,10 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
       return (
         <div>
         <Box justifyContent="center">
-          <Icon style={{ margin: 'auto' }} mb={3} color="#29B236" name="CheckCircle" />
-          <Heading.h3 mb={3}>The ETH is all yours!</Heading.h3>
+          <Icon style={{ margin: 'auto' }} size="80" mb={3} color="#29B236" name="CheckCircle" />
+          <Heading.h3 textAlign="center" mb={3}>ETH withdrawn</Heading.h3>
           <Button.Text
+            textAlign="center"
             as="a"
             href={`https://ropsten.etherscan.io/tx/${txReceipt.transactionHash}`}>
             View on etherscan
@@ -482,9 +497,9 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
                 setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
               } else if (excStr.indexOf('Invalid signature') !== 0) {
                 setWithdrawalState(WITHDRAWALSTATES.InvalidSignature)
-              } else if (excStr.indexOf('Ring isn\'t closed') !== 0) {
+              } else if (excStr.indexOf('Pool isn\'t closed') !== 0) {
                 setWithdrawalState(WITHDRAWALSTATES.RingNotClosed)
-              } else if (excStr.indexOf('All funds from current Ring') !== 0) {
+              } else if (excStr.indexOf('All ETH from current pool') !== 0) {
                 setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
               } else {
                 setUnknownErrorStr(excStr)
@@ -518,9 +533,16 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
             onChange={(e) => setUseRelayer(e.target.checked)}
           />
         </Box> */}
-        <Text italic my="3">You will need to pay a small transaction fee to withdraw funds.</Text>
+        <Flex alignItems="center" my="3">
+          <Box>
+            <Icon size="20" mr={1} name="Info" />
+          </Box>
+          <Box>
+            <Text italic>You will need to pay a small transaction fee to withdraw ETH.</Text>
+          </Box>
+        </Flex>
         <Button type='submit' width={1} disabled={noWeb3 || noContractInstance}>
-            Withdraw funds
+            Withdraw ETH
         </Button>
       </Card>
       </Form>

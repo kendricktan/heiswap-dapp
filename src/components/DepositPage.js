@@ -1,7 +1,7 @@
 // @flow
 import crypto from 'crypto'
 import React, { useState } from 'react'
-import { Loader, Card, Form, Icon, Box, Input, Modal, Select, Text, Button, Checkbox, PublicAddress, Heading, Flex } from 'rimble-ui'
+import { Loader, Card, Form, Icon, Box, Flash, Input, Modal, Select, Text, Button, Checkbox, PublicAddress, Heading, Flex } from 'rimble-ui'
 import { serialize, h1, bn128 } from '../utils/AltBn128'
 import { DappGateway } from '../types/DappGateway'
 
@@ -113,7 +113,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
       } width='100%'>
       <Card>
         <Heading.h3 fontSize="3">Deposit ETH</Heading.h3>
-        <Text my="3">Enter the recipient and choose the amount of ETH you want to send privately. </Text>
+        <Text my="3">Enter your recipient and choose how much ETH you want to send them. </Text>
         <Form.Field
           validated={depForumParams.validEthAddress}
           label='Recipient Ethereum address' width={1}
@@ -166,7 +166,14 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
             }}
           />
         </Form.Field>
-        <Text italic my="3">Transaction fees apply</Text>
+        <Flex alignItems="center" my="3">
+          <Box>
+            <Icon size="20" mr={1} name="Info" />
+          </Box>
+          <Box>
+            <Text italic>You will need to pay a small transaction fee to deposit ETH.</Text>
+          </Box>
+        </Flex>
 
         <Button type='submit' width={1} disabled={noWeb3 || noContractInstance || !depForumParams.validEthAddress}>
           Deposit ETH
@@ -210,13 +217,13 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
                 {
                   modalParams.heiTokenFinal === null
                     ? 'Depositing ETH... make sure you have confirmed the deposit in your wallet'
-                    : <Text>ETH deposited! <a href={`https://ropsten.etherscan.io/tx/${modalParams.txHash}`}>Check on Etherscan</a></Text>
+                    : <a href={`https://ropsten.etherscan.io/tx/${modalParams.txHash}`}>ETH deposited!</a>
                 }
               </Text>
 
                 <Heading.h3 my="3" fontSize="3">What to do next</Heading.h3>
                 <Text>
-                Send this token to whoever you want to send your ETH to. They'll need it to withdraw their funds. </Text>
+                Send this token to your recipient. They'll need it to withdraw their funds. </Text>
               <br />
 
               <PublicAddress width='100%' label="Hei token" address={
@@ -224,11 +231,19 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
               } onChange={() => {}} />
             </div>
             <Box>
-              <Checkbox
-                label='I have saved/sent the Hei token'
-                mb={3}
-                onChange={(e) => { setModalParams(Object.assign({}, modalParams, { acknowledgeClose: e.target.checked })) }}
-              />
+            <Flash mb={3} variant="warning">
+              <Flex alignItems="center">
+                <Box mr={1}>
+                  <Icon name="Warning" />
+                </Box>
+                <Box mx={3}>There is no way to recover a lost token. If you lose this token, you'll lose your ETH.</Box>
+              </Flex>
+            </Flash>
+            <Checkbox
+              label='I have saved/sent the Hei token'
+              mb={3}
+              onChange={(e) => { setModalParams(Object.assign({}, modalParams, { acknowledgeClose: e.target.checked })) }}
+            />
             </Box>
           </Box>
 
