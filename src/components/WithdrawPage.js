@@ -329,7 +329,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
   }
 
   return (
-    <div style={{ width: '100%' }}>
+    <Box style={{ width: '100%' }} mb={6}>
       <Form onSubmit={(e) => {
         (async () => {
           e.preventDefault()
@@ -573,7 +573,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
           </Box>
         </Card>
       </Modal>
-    </div>
+    </Box>
   )
 }
 
