@@ -510,9 +510,9 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
         })()
       }} width='100%'>
       <Card>
-      <Heading.h3 fontSize="3">Withdraw ETH</Heading.h3>
-      <Text my="3">Paste your Hei token to see if your ETH is ready to be withdrawn privately. </Text>
-        <Tooltip message="If you don't have the token, ask whoever deposited the ETH" placement="right">
+      <Heading.h3 fontSize="3">Get ETH</Heading.h3>
+      <Text my="3">Paste your Hei token to see if your ETH is ready to withdraw. No token? Ask whoever deposited your ETH – they should have it.</Text>
+        <Tooltip message="No token? Ask your sender" placement="bottom">
         <Form.Field
           label='Hei token' width={1}>
           <Form.Input

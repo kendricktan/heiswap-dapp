@@ -21,6 +21,7 @@ import {
   Button,
   Blockie,
   QR,
+  Icon,
   Flash,
   ThemeProvider,
   Card,
@@ -172,14 +173,16 @@ const HeiSwapApp = () => {
             </Box>
           </Flex>
 
+
+
           <Flex>
             <Box m={'auto'} width={[1, 1 / 2]}>
               <Box mx="3" my="3">
 
-                <Heading.h2 textAlign="center" mt="3" my="3" fontSize="3">Send and receive ETH privately 🌚</Heading.h2>
-                <Text textAlign="center">Deposit any ETH you want to send into the pool in exchange for a token. Once the pool's big enough, your recipient can withdraw their ETH using the token.</Text>
-
+                <Heading.h2 textAlign="center" mt="3" my="3" fontSize="3">Move ETH privately 🌚</Heading.h2>
+                <Text textAlign="center">Hide your transfers from internet strangers.</Text>
               </Box>
+
               <Flex
                 px={4}
                 mx={2}
@@ -187,12 +190,12 @@ const HeiSwapApp = () => {
                 justifyContent={'center'}
               >
                 { curTab.index === 0
-                  ? <Pill mt={2} color="primary"><Button.Text mainColor="#110C62">Deposit</Button.Text></Pill>
-                  : <Button.Text mainColor="#988CF0" onClick={() => setCurTab({ index: 0 })}>Deposit</Button.Text>
+                  ? <Pill mt={2} color="primary"><Button.Text mainColor="#110C62">Send</Button.Text></Pill>
+                  : <Button.Text mainColor="#988CF0" onClick={() => setCurTab({ index: 0 })}>Send</Button.Text>
                 }
                 { curTab.index === 1
-                  ? <Pill mt={2} color="primary"><Button.Text mainColor="#110C62">Withdraw</Button.Text></Pill>
-                  : <Button.Text mainColor="#988CF0" onClick={() => setCurTab({ index: 1 })}>Withdraw</Button.Text>
+                  ? <Pill mt={2} color="primary"><Button.Text mainColor="#110C62">Get</Button.Text></Pill>
+                  : <Button.Text mainColor="#988CF0" onClick={() => setCurTab({ index: 1 })}>Get</Button.Text>
                 }
                 {/*{ curTab.index === 2
                   ? <Button.Text mainColor="#988CF0">Status</Button.Text>

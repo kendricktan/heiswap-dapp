@@ -1222,22 +1222,6 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@rimble/connection-banner@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@rimble/connection-banner/-/connection-banner-1.2.1.tgz#db9a6f23d593b21a5a22dfc92b87ae906ff0f605"
-  integrity sha512-/uvXQKcaAD17etvH+Ss2xOqCMROUulpdiPeizpRLd5FazMEFD7Hm4hsgZ2HOVG6Eh20D1uSnnq1r9lOGFH06wA==
-  dependencies:
-    "@rimble/utils" "^1.2.1"
-    rimble-ui "^0.9.1"
-
-"@rimble/utils@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@rimble/utils/-/utils-1.2.1.tgz#b078f7e697c248531f6031960ae4540bf0699415"
-  integrity sha512-Hfe1ZOD9Qj+Ac3IeSHZNrzYOMgJM6tvVgZ9eg0qKr11FfRdmbNZ0H7botum5wTMdbSCKpmge7mXHhQbBP8vcJg==
-  dependencies:
-    bowser "^2.2.0"
-    rimble-ui "^0.9.1"
-
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/@svgr/babel-plugin-add-jsx-attribute/-/babel-plugin-add-jsx-attribute-4.2.0.tgz#dadcb6218503532d6884b210e7f3c502caaa44b1"
@@ -2607,11 +2591,6 @@ boolbase@^1.0.0, boolbase@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha1-aN/1++YMUes3cl6p4+0xDcwed24=
-
-bowser@^2.2.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/bowser/-/bowser-2.4.0.tgz#fcfbca3d7659ba88afabbb8a45b33d2e4876a90c"
-  integrity sha512-DA9Opnb8S8TBLPPszrHDtCCATbAMkrxF+AxPs/d95r99frBioGpNwL1cbG3AHeV3FnoZW655vEvEryBHFeGrMg==
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -10601,7 +10580,7 @@ rgba-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/rgba-regex/-/rgba-regex-1.0.0.tgz#43374e2e2ca0968b0ef1523460b7d730ff22eeb3"
   integrity sha1-QzdOLiyglosO8VI0YLfXMP8i7rM=
 
-rimble-ui@^0.9.1, rimble-ui@^0.9.4:
+rimble-ui@^0.9.4:
   version "0.9.4"
   resolved "https://registry.yarnpkg.com/rimble-ui/-/rimble-ui-0.9.4.tgz#ede6740fe7c3da5280e06bd78a7755e80ecaff3f"
   integrity sha512-h3Oac0HgMv99OQ15xz4qChcvQDvn+9+D8F05pHWouS6suMYswCMHCaDTKbBHF3mBEHqXb9oe4OHFy9jxupc3ig==

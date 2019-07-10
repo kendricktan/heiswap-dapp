@@ -40,7 +40,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
   const { noWeb3, noContractInstance } = props
 
   return (
-    <div style={{ width: '100%' }}>
+    <Box style={{ width: '100%' }} mb={6}>
       <Form onSubmit={
         (e) => {
           (async () => {
@@ -112,8 +112,30 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
         }
       } width='100%'>
       <Card>
-        <Heading.h3 fontSize="3">Deposit ETH</Heading.h3>
-        <Text my="3">Enter your recipient and choose how much ETH you want to send them. </Text>
+        <Heading.h3 mb={3} fontSize="3">Send ETH</Heading.h3>
+        {/*}<Flex>
+              <Box width={1/2} mx={2}>
+              <Flex>
+              <Box mr={1}>
+              <Icon name="CheckCircle" />
+              </Box>
+              <Box>
+              <Text fontSize="1">Deposit ETH and get a token</Text>
+              </Box>
+              </Flex>
+              </Box>
+              <Box width={1/2} mx={2}>
+              <Flex>
+              <Box mr={1}>
+              <Icon name="CheckCircle" />
+              </Box>
+              <Box>
+              <Text fontSize="1">Share the token with your recipient</Text>
+              </Box>
+              </Flex>
+              </Box>
+        </Flex>*/}
+        <Text my="3">Deposit your ETH into the pool and get a token that represents the same value. That token can be used by the recipient address to withdraw your deposit.</Text>
         <Form.Field
           validated={depForumParams.validEthAddress}
           label='Recipient Ethereum address' width={1}
@@ -144,7 +166,6 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
             }}
           />
         </Form.Field>
-
         <Form.Field label='ETH amount' width={1}>
           <Select
             items={[
@@ -183,27 +204,6 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
 
       <Modal isOpen={modalParams.isOpen}>
         <Card style={{ maxWidth: '620px' }} p={0}>
-          {
-            modalParams.acknowledgeClose
-              ? <Button.Text
-                icononly
-                icon={'Close'}
-                color={'moon-gray'}
-                position={'absolute'}
-                top={0}
-                right={0}
-                mt={3}
-                mr={3}
-                onClick={() => {
-                  // Only allow close if tx is complete
-                  // and user acknowledged close
-                  if (modalParams.heiToken !== null && modalParams.acknowledgeClose) {
-                    setModalParams(Object.assign({}, modalParams, { isOpen: false }))
-                  }
-                }}
-              /> : null
-          }
-
           <Box p={4} mb={3}>
             <div>
               {
@@ -221,12 +221,12 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
                 }
               </Text>
 
-                <Heading.h3 my="3" fontSize="3">What to do next</Heading.h3>
+                <Heading.h3 my="3" fontSize="3">Next up</Heading.h3>
                 <Text>
                 Send this token to your recipient. They'll need it to withdraw their funds. </Text>
               <br />
 
-              <PublicAddress width='100%' label="Hei token" address={
+              <PublicAddress width={1} label="Hei token" address={
                 modalParams.heiTokenFinal === null ? modalParams.heiTokenEst : modalParams.heiTokenFinal
               } onChange={() => {}} />
             </div>
@@ -244,12 +244,33 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
               mb={3}
               onChange={(e) => { setModalParams(Object.assign({}, modalParams, { acknowledgeClose: e.target.checked })) }}
             />
+            {
+              modalParams.acknowledgeClose
+                ? <Button
+                  position={'absolute'}
+                  top={0}
+                  width={1}
+                  onClick={() => {
+                    // Only allow close if tx is complete
+                    // and user acknowledged close
+                    if (modalParams.heiToken !== null && modalParams.acknowledgeClose) {
+                      setModalParams(Object.assign({}, modalParams, { isOpen: false }))
+                    }
+                  }}
+                >Close</Button>
+                : <Button.Outline
+                  position={'absolute'}
+                  top={0}
+                  width={1}
+                  disabled
+                >Confirm you've copied the token</Button.Outline>
+            }
             </Box>
           </Box>
 
         </Card>
       </Modal>
-    </div>
+    </Box>
   )
 }
 
