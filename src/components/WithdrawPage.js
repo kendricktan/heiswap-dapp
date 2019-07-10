@@ -3,7 +3,7 @@ import BN from 'bn.js'
 import { Scalar, Point, serialize, h1, bn128 } from '../utils/AltBn128'
 import { append0x } from '../utils/helper'
 import React, { useState } from 'react'
-import { Form, Flex, Blockie, EthAddress, Icon, Modal, Flash, Card, Box, Button, Loader, Text, Heading, Tooltip } from 'rimble-ui'
+import { Form, Flex, Blockie, EthAddress, Link, Icon, Modal, Flash, Card, Box, Button, Loader, Text, Heading, Tooltip } from 'rimble-ui'
 import { DappGateway } from '../types/DappGateway'
 
 // BigNumber 0
@@ -511,8 +511,8 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
       }} width='100%'>
       <Card>
       <Heading.h3 fontSize="3">Get ETH</Heading.h3>
-      <Text my="3">Paste your Hei token to see if your ETH is ready to withdraw. No token? Ask whoever deposited your ETH – they should have it.</Text>
-        <Tooltip message="No token? Ask your sender" placement="bottom">
+      <Text my="3">Paste your Hei token to see if your ETH is ready to withdraw privately.</Text>
+
         <Form.Field
           label='Hei token' width={1}>
           <Form.Input
@@ -524,7 +524,11 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
             onChange={(e) => setHeiToken(e.target.value)}
           />
         </Form.Field>
+        <Box textAlign="right">
+        <Tooltip message="Whoever deposited your ETH should have your Hei token" placement="bottom">
+        <Link>I don't have a token</Link>
         </Tooltip>
+        </Box>
         {/* <Box>
           <Form.Check
             checked={useRelayer}
