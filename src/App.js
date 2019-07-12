@@ -8,17 +8,21 @@ import Logo from './assets/key.png'
 import DepositPage from './components/DepositPage'
 import WithdrawPage from './components/WithdrawPage'
 import StatusPage from './components/StatusPage'
+
 import {
   Heading,
   Text,
-  Input,
   Flex,
   Box,
   Button,
   Blockie,
   QR,
   Flash,
-  ThemeProvider
+  ThemeProvider,
+  Pill,
+  PublicAddress,
+  EthAddress,
+  theme
 } from 'rimble-ui'
 
 import { DappGateway } from './types/DappGateway'
@@ -119,13 +123,20 @@ const HeiSwapApp = () => {
   )
 
   return (
-    <ThemeProvider>
-      <div style={{ position: 'relative', minHeight: '100vh' }}>
-        <div style={{ paddingBottom: '3.5rem' }}>
-          <Flex>
-            <Box p={3} width={1} style={{ textAlign: 'right' }}>
+    <ThemeProvider theme={theme}>
+      <div style={{ background: '', position: 'relative', minHeight: '100vh' }}>
+        <div>
+          <Flex bg='#DED9FC' alignItems='center' mb='3'>
+            <Box alignItems='center' p={2} width={1} style={{ textAlign: 'left' }}>
+              <Heading.h1 fontSize='4' my='2' mx='2'>
+                <img alt='logo' src={Logo} style={{ width: '16px', height: '16px', marginRight: '6px' }} />
+                  Heiswap
+              </Heading.h1>
+            </Box>
+
+            <Box alignItems='center' p={2} width={1} style={{ textAlign: 'right' }}>
               {dappGateway.ethAddress === null ? (
-                <Button size='small' style={{ marginTop: '10px' }}
+                <Button size='medium' my='1'
                   onClick={() => {
                     if (dappGateway.ethAddress === null) {
                       (async () => {
@@ -139,12 +150,17 @@ const HeiSwapApp = () => {
                   Connect
                 </Button>
               ) : (
-                <Button.Outline size='small' style={{ marginTop: '10px' }}
+                <Button.Outline size='medium' my='1'
                   onClick={() => setweb3StatusModal(true)}
                 >
-                  <Blockie opts={{ seed: dappGateway.ethAddress, size: 4 }} />
-                    &nbsp;&nbsp;
-                  {dappGateway.ethAddress.slice(0, 5) + '...' + dappGateway.ethAddress.slice(-4)}
+                  <Flex>
+                    <Box mr='2'>
+                      <Blockie opts={{ seed: dappGateway.ethAddress, size: 8 }} />
+                    </Box>
+                    <Box>
+                      <EthAddress fontSize='2' address={dappGateway.ethAddress} truncate />
+                    </Box>
+                  </Flex>
                 </Button.Outline>
               )}
             </Box>
@@ -152,39 +168,29 @@ const HeiSwapApp = () => {
 
           <Flex>
             <Box m={'auto'} width={[1, 1 / 2]}>
-              <div style={{ margin: '0 20px 0 20px' }}>
-                <Button.Text>
-                  <img alt='logo' src={Logo} style={{ width: '16px', height: '16px', marginRight: '6px' }} />
-                    Heiswap
-                </Button.Text>
-                <div style={{ float: 'right' }}>
-                  <a href='https://kndrck.co/posts/introducing_heiswap/'>
-                    <Button.Text>
-                      Help & FAQ
-                    </Button.Text>
-                  </a>
-                </div>
-              </div>
+              <Box mx='3' my='3'>
+                <Heading.h2 textAlign='center' mt='3' my='3' fontSize='3'>Move ETH privately <span role='img'>🌚</span></Heading.h2>
+                <Text textAlign='center'>Hide your transfers from internet strangers.</Text>
+              </Box>
+
               <Flex
                 px={4}
-                py={3}
-                borderTop={1}
-                borderBottom={1}
+                mx={2}
                 borderColor={'#E8E8E8'}
-                justifyContent={'space-between'}
+                justifyContent={'center'}
               >
                 { curTab.index === 0
-                  ? <Button>Deposit</Button>
-                  : <Button.Outline onClick={() => setCurTab({ index: 0 })}>Deposit</Button.Outline>
+                  ? <Pill mt={2} color='primary'><Button.Text mainColor='#110C62'>Send</Button.Text></Pill>
+                  : <Button.Text mainColor='#988CF0' onClick={() => setCurTab({ index: 0 })}>Send</Button.Text>
                 }
                 { curTab.index === 1
-                  ? <Button>Withdraw</Button>
-                  : <Button.Outline onClick={() => setCurTab({ index: 1 })}>Withdraw</Button.Outline>
+                  ? <Pill mt={2} color='primary'><Button.Text mainColor='#110C62'>Get</Button.Text></Pill>
+                  : <Button.Text mainColor='#988CF0' onClick={() => setCurTab({ index: 1 })}>Get</Button.Text>
                 }
-                { curTab.index === 2
-                  ? <Button>Status</Button>
-                  : <Button.Outline onClick={() => setCurTab({ index: 2 })}>Status</Button.Outline>
-                }
+                {/* { curTab.index === 2
+                  ? <Button.Text mainColor="#988CF0">Status</Button.Text>
+                  : <Button.Text mainColor="#988CF0" onClick={() => setCurTab({ index: 2 })}>Status</Button.Text>
+                } */}
               </Flex>
 
               {
@@ -195,7 +201,7 @@ const HeiSwapApp = () => {
                     justifyContent={'stretch'}
                   >
                     <Flash variant='danger'>
-                      Please connect your Ethereum account to continue
+                      Connect your Ethereum account to continue.
                     </Flash>
                   </Flex>
                   : dappGateway.heiswapInstance === null && dappGateway.web3 !== null
@@ -205,7 +211,7 @@ const HeiSwapApp = () => {
                       justifyContent={'stretch'}
                     >
                       <Flash variant='danger'>
-                      Heiswap is currently only on ropsten
+                      Switch to the Ropsten network to use Heiswap.
                       </Flash>
                     </Flex>
                     : null
@@ -217,9 +223,9 @@ const HeiSwapApp = () => {
                 justifyContent={'stretch'}
               >
                 {
-                  (curTab.index === 0) ? <DepositPage dappGateway={dappGateway} noWeb3={noWeb3} noContractInstance={noContractInstance}/>
-                    : (curTab.index === 1) ? <WithdrawPage dappGateway={dappGateway} noWeb3={noWeb3} noContractInstance={noContractInstance}/>
-                      : (curTab.index === 2) ? <StatusPage dappGateway={dappGateway} noWeb3={noWeb3} noContractInstance={noContractInstance}/>
+                  (curTab.index === 0) ? <DepositPage dappGateway={dappGateway} noWeb3={noWeb3} noContractInstance={noContractInstance} />
+                    : (curTab.index === 1) ? <WithdrawPage dappGateway={dappGateway} noWeb3={noWeb3} noContractInstance={noContractInstance} />
+                      : (curTab.index === 2) ? <StatusPage dappGateway={dappGateway} noWeb3={noWeb3} noContractInstance={noContractInstance} />
                         : <div>Invalid Page</div>
                 }
               </Flex>
@@ -242,27 +248,30 @@ const HeiSwapApp = () => {
                   </div>
                 )
                 : (
-                  <div style={{ textAlign: 'center' }}>
-                    <Heading.h3>Connected Ethereum account</Heading.h3>
-                    <br />
-                    <Text style={{ textAlign: 'center' }}>
+                  <div>
+                    <Heading.h3 mb='3'>Your connected Ethereum account</Heading.h3>
+                    <Text mb='3'>Scan this QR code to send funds to your connected account.</Text>
+                    <Box>
                       <QR value={dappGateway.ethAddress} />
-                      <br /><br />
-                      <Input
-                        style={{ textAlign: 'center' }}
+                    </Box>
+                    <Box mt='3'>
+                      <PublicAddress
+                        my='3'
                         width='100%'
-                        type='text' onChange={() => { }} value={dappGateway.ethAddress}
+                        address={dappGateway.ethAddress}
+                        label='Ethereum address'
                       />
-                    </Text>
+                    </Box>
                   </div>
                 )
             }
           </Web3StatusModal>
         </div>
-
         <div style={{ position: 'absolute', bottom: '0', width: '100%', height: '3.5rem', borderTop: '1px solid #E8E8E8' }}>
           <Text style={{ textAlign: 'center', paddingTop: '1rem' }}>
-            Built by&nbsp;<a href='https://kndrck.co'>Kendrick Tan</a>&nbsp;|&nbsp;<a href='https://github.com/kendricktan/heiswap-dapp'>Source code</a>
+            Built by&nbsp;<a href='https://kndrck.co'>Kendrick Tan</a>&nbsp;|&nbsp;<a href='https://github.com/kendricktan/heiswap-dapp'>Source code</a>&nbsp;|&nbsp;<a href='https://kndrck.co/posts/introducing_heiswap/'>
+                  Help & FAQ
+            </a>
           </Text>
         </div>
       </div>

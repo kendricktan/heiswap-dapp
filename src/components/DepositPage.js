@@ -1,7 +1,7 @@
 // @flow
 import crypto from 'crypto'
 import React, { useState } from 'react'
-import { Loader, Card, Form, Box, Input, Modal, Select, Text, Button, Checkbox } from 'rimble-ui'
+import { Loader, Card, Form, Icon, Box, Flash, Modal, Select, Text, Button, Checkbox, PublicAddress, Heading, Flex } from 'rimble-ui'
 import { serialize, h1, bn128 } from '../utils/AltBn128'
 import { DappGateway } from '../types/DappGateway'
 
@@ -40,7 +40,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
   const { noWeb3, noContractInstance } = props
 
   return (
-    <div style={{ width: '100%' }}>
+    <Box style={{ width: '100%' }} mb={6}>
       <Form onSubmit={
         (e) => {
           (async () => {
@@ -111,13 +111,38 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
           })()
         }
       } width='100%'>
+      <Card>
+        <Heading.h3 mb={3} fontSize="3">Send ETH</Heading.h3>
+        {/*}<Flex>
+              <Box width={1/2} mx={2}>
+              <Flex>
+              <Box mr={1}>
+              <Icon name="CheckCircle" />
+              </Box>
+              <Box>
+              <Text fontSize="1">Deposit ETH and get a token</Text>
+              </Box>
+              </Flex>
+              </Box>
+              <Box width={1/2} mx={2}>
+              <Flex>
+              <Box mr={1}>
+              <Icon name="CheckCircle" />
+              </Box>
+              <Box>
+              <Text fontSize="1">Share the token with your recipient</Text>
+              </Box>
+              </Flex>
+              </Box>
+        </Flex>*/}
+        <Text my="3">Deposit your ETH into the pool and get a token that represents the same value. That token can be used by the recipient address to withdraw your deposit.</Text>
         <Form.Field
           validated={depForumParams.validEthAddress}
-          label='Approved Withdrawal Address' width={1}
+          label='Recipient Ethereum address' width={1}
         >
           <Form.Input
             type='text'
-            placeholder='ETH Address: 0x.....'
+            placeholder='e.g. 0x53Nd...2Eth'
             required
             width={1}
             value={depForumParams.targetEthAddress}
@@ -141,7 +166,7 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
             }}
           />
         </Form.Field>
-        <Form.Field label='ETH Amount' width={1}>
+        <Form.Field label='ETH amount' width={1}>
           <Select
             items={[
               '2',
@@ -162,70 +187,90 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
             }}
           />
         </Form.Field>
+        <Flex alignItems="center" my="3">
+          <Box>
+            <Icon size="20" mr={1} name="Info" />
+          </Box>
+          <Box>
+            <Text italic>You will need to pay a small transaction fee to deposit ETH.</Text>
+          </Box>
+        </Flex>
+
         <Button type='submit' width={1} disabled={noWeb3 || noContractInstance || !depForumParams.validEthAddress}>
-          Deposit
+          Deposit ETH
         </Button>
+        </Card>
       </Form>
 
       <Modal isOpen={modalParams.isOpen}>
         <Card style={{ maxWidth: '620px' }} p={0}>
-          {
-            modalParams.acknowledgeClose
-              ? <Button.Text
-                icononly
-                icon={'Close'}
-                color={'moon-gray'}
-                position={'absolute'}
-                top={0}
-                right={0}
-                mt={3}
-                mr={3}
-                onClick={() => {
-                  // Only allow close if tx is complete
-                  // and user acknowledged close
-                  if (modalParams.heiToken !== null && modalParams.acknowledgeClose) {
-                    setModalParams(Object.assign({}, modalParams, { isOpen: false }))
-                  }
-                }}
-              /> : null
-          }
-
           <Box p={4} mb={3}>
             <div>
               {
                 modalParams.heiTokenFinal === null
                   ? <Loader style={{ margin: 'auto' }} size='10rem' />
-                  : null
+                  : <Icon style={{ margin: 'auto' }} color="#29B236" size="80" name="CheckCircle" />
               }
 
               <br />
-              <Text style={{ textAlign: 'center' }}>
+              <Text py={3} borderBottom={1} borderColor={'#E8E8E8'} mb="3" style={{ textAlign: 'center' }}>
                 {
                   modalParams.heiTokenFinal === null
-                    ? 'Processing transaction...'
-                    : <a href={`https://ropsten.etherscan.io/tx/${modalParams.txHash}`}>Transaction completed</a>
-                }<br /><br />
-                Ensure the withdrawing party has the following hei-token. <br />
-                <strong>Losing it will make you lose access to the deposited funds.</strong>
+                    ? 'Depositing ETH... make sure you have confirmed the deposit in your wallet'
+                    : <a href={`https://ropsten.etherscan.io/tx/${modalParams.txHash}`}>ETH deposited!</a>
+                }
               </Text>
+
+                <Heading.h3 my="3" fontSize="3">Next up</Heading.h3>
+                <Text>
+                Send this token to your recipient. They'll need it to withdraw their funds. </Text>
               <br />
-              <Box>
-                <Checkbox
-                  label='I have saved the hei-token somewhere safe'
-                  mb={3}
-                  onChange={(e) => { setModalParams(Object.assign({}, modalParams, { acknowledgeClose: e.target.checked })) }}
-                />
-              </Box>
-              <Input style={{ textAlign: 'center' }} width='100%' value={
+
+              <PublicAddress width={1} label="Hei token" address={
                 modalParams.heiTokenFinal === null ? modalParams.heiTokenEst : modalParams.heiTokenFinal
-              } onChange={() => {}}
-              />
+              } onChange={() => {}} />
             </div>
+            <Box>
+            <Flash mb={3} variant="warning">
+              <Flex alignItems="center">
+                <Box mr={1}>
+                  <Icon name="Warning" />
+                </Box>
+                <Box mx={3}>There is no way to recover a lost token. If you lose this token, you'll lose your ETH.</Box>
+              </Flex>
+            </Flash>
+            <Checkbox
+              label='I have saved/sent the Hei token'
+              mb={3}
+              onChange={(e) => { setModalParams(Object.assign({}, modalParams, { acknowledgeClose: e.target.checked })) }}
+            />
+            {
+              modalParams.acknowledgeClose
+                ? <Button
+                  position={'absolute'}
+                  top={0}
+                  width={1}
+                  onClick={() => {
+                    // Only allow close if tx is complete
+                    // and user acknowledged close
+                    if (modalParams.heiToken !== null && modalParams.acknowledgeClose) {
+                      setModalParams(Object.assign({}, modalParams, { isOpen: false }))
+                    }
+                  }}
+                >Close</Button>
+                : <Button.Outline
+                  position={'absolute'}
+                  top={0}
+                  width={1}
+                  disabled
+                >Confirm you've copied the token</Button.Outline>
+            }
+            </Box>
           </Box>
 
         </Card>
       </Modal>
-    </div>
+    </Box>
   )
 }
 
