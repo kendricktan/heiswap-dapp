@@ -1,5 +1,7 @@
 // @flow
 
+/* eslint-disable jsx-ally/accessible-emoji */
+
 import React, { useState, useEffect } from 'react'
 import getWeb3 from './utils/getWeb3'
 import createDrizzleUtils from '@drizzle-utils/core'
@@ -169,7 +171,7 @@ const HeiSwapApp = () => {
           <Flex>
             <Box m={'auto'} width={[1, 1 / 2]}>
               <Box mx='3' my='3'>
-                <Heading.h2 textAlign='center' mt='3' my='3' fontSize='3'>Move ETH privately <span role='img'>🌚</span></Heading.h2>
+                <Heading.h2 textAlign='center' mt='3' my='3' fontSize='3'>Move ETH privately <span role='img' aria-label='moon-face'>🌚</span></Heading.h2>
                 <Text textAlign='center'>Hide your transfers from internet strangers.</Text>
               </Box>
 
