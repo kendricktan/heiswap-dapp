@@ -10,6 +10,7 @@
     "elliptic": "^6.5.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
     "rimble-ui": "^0.9.4",
     "styled-components": "^4.3.2",

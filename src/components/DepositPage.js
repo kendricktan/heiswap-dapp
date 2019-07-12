@@ -1,7 +1,7 @@
 // @flow
 import crypto from 'crypto'
 import React, { useState } from 'react'
-import { Loader, Card, Form, Icon, Box, Flash, Input, Modal, Select, Text, Button, Checkbox, PublicAddress, Heading, Flex } from 'rimble-ui'
+import { Loader, Card, Form, Icon, Box, Flash, Modal, Select, Text, Button, Checkbox, PublicAddress, Heading, Flex } from 'rimble-ui'
 import { serialize, h1, bn128 } from '../utils/AltBn128'
 import { DappGateway } from '../types/DappGateway'
 

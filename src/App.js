@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import getWeb3 from './utils/getWeb3'
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom'
 import createDrizzleUtils from '@drizzle-utils/core'
 import Web3StatusModal from './components/Web3StatusModal'
 import Logo from './assets/key.png'
@@ -13,16 +12,13 @@ import StatusPage from './components/StatusPage'
 import {
   Heading,
   Text,
-  Input,
   Flex,
   Box,
   Button,
   Blockie,
   QR,
-  Icon,
   Flash,
   ThemeProvider,
-  Card,
   Pill,
   PublicAddress,
   EthAddress,
@@ -162,8 +158,8 @@ const HeiSwapApp = () => {
                       <Blockie opts={{ seed: dappGateway.ethAddress, size: 8 }} />
                     </Box>
                     <Box>
-                    <EthAddress fontSize='2' address={dappGateway.ethAddress} truncate />
-                  </Box>
+                      <EthAddress fontSize='2' address={dappGateway.ethAddress} truncate />
+                    </Box>
                   </Flex>
                 </Button.Outline>
               )}
@@ -173,8 +169,7 @@ const HeiSwapApp = () => {
           <Flex>
             <Box m={'auto'} width={[1, 1 / 2]}>
               <Box mx='3' my='3'>
-
-                <Heading.h2 textAlign='center' mt='3' my='3' fontSize='3'>Move ETH privately 🌚</Heading.h2>
+                <Heading.h2 textAlign='center' mt='3' my='3' fontSize='3'>Move ETH privately <span role='img'>🌚</span></Heading.h2>
                 <Text textAlign='center'>Hide your transfers from internet strangers.</Text>
               </Box>
 
