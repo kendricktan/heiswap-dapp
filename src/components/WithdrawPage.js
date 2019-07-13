@@ -3,7 +3,7 @@ import BN from 'bn.js'
 import { Scalar, Point, serialize, h1, bn128 } from '../utils/AltBn128'
 import { append0x } from '../utils/helper'
 import React, { useState } from 'react'
-import { Form, Flex, Blockie, EthAddress, Link, Icon, Modal, Flash, Card, Box, Button, Loader, Text, Heading, Tooltip } from 'rimble-ui'
+import { Form, Radio, Field, Flex, Input, Blockie, EthAddress, Link, Icon, Modal, Flash, Card, Box, Button, Loader, Text, Heading, Tooltip } from 'rimble-ui'
 import { DappGateway } from '../types/DappGateway'
 
 // BigNumber 0
@@ -36,7 +36,9 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
   const [txReceipt, setTxReceipt] = useState(null)
   const [forceCloseBlocksLeft, setForceCloseBlocksLeft] = useState(-1)
   const [heiToken, setHeiToken] = useState('')
-  // const [useRelayer, setUseRelayer] = useState(false)
+  const [useRelayer, setUseRelayer] = useState(true)
+  const [useDefaultRelayer, setUseDefaultRelayer] = useState(true)
+  const [customerRelayerURL, setCustomRelayerURL] = useState('')
   const [openModal, setOpenModal] = useState(false)
   const [withdrawalState, setWithdrawalState] = useState(WITHDRAWALSTATES.Nothing)
 
@@ -529,22 +531,51 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
               <Link>I don't have a token</Link>
             </Tooltip>
           </Box>
-          {/* <Box>
-          <Form.Check
-            checked={useRelayer}
-            label={<span>Retrieve via relayer. <a href='/faq'>More Info</a></span>}
-            mb={3}
-            onChange={(e) => setUseRelayer(e.target.checked)}
-          />
-        </Box> */}
-          <Flex alignItems='center' my='3'>
-            <Box>
-              <Icon size='20' mr={1} name='Info' />
-            </Box>
-            <Box>
-              <Text italic>You will need to pay a small transaction fee to withdraw ETH.</Text>
-            </Box>
-          </Flex>
+          <Box my='3'>
+            <Form.Check
+              checked={useRelayer}
+              label={`Use relayer to withdraw`}
+              mb={3}
+              onChange={(e) => setUseRelayer(e.target.checked)}
+            />
+          </Box>
+          <Box my='3'>
+            {
+              useRelayer
+                ? <div>
+                  <Field label='Select your relayer'>
+                    <div>
+                      <Radio label='Default - relayer.heiswap.exchange'
+                        my='1'
+                        checked={useDefaultRelayer}
+                        onChange={(e) => setUseDefaultRelayer(e.target.checked)}
+                      />
+                      <Radio label='Custom'
+                        my='1'
+                        checked={!useDefaultRelayer}
+                        onChange={(e) => setUseDefaultRelayer(!e.target.checked)}
+                      />
+                      <Input
+                        placeholder='Relayer URL'
+                        height='2rem'
+                        disabled={useDefaultRelayer}
+                        width={1}
+                        value={customerRelayerURL}
+                        onChange={(e) => setCustomRelayerURL(e.target.value)}
+                      />
+                    </div>
+                  </Field>
+                </div>
+                : <Flex alignItems='center' my='3'>
+                  <Box>
+                    <Icon size='20' mr={1} name='Info' />
+                  </Box>
+                  <Box>
+                    <Text italic>You will need some ETH in your withdrawal address to pay for GAS.</Text>
+                  </Box>
+                </Flex>
+            }
+          </Box>
           <Button type='submit' width={1} disabled={noWeb3 || noContractInstance}>
             Withdraw ETH
           </Button>

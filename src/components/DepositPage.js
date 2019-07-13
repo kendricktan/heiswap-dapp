@@ -111,9 +111,9 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
           })()
         }
       } width='100%'>
-      <Card>
-        <Heading.h3 mb={3} fontSize="3">Send ETH</Heading.h3>
-        {/*}<Flex>
+        <Card>
+          <Heading.h3 mb={3} fontSize='3'>Send ETH</Heading.h3>
+          {/* }<Flex>
               <Box width={1/2} mx={2}>
               <Flex>
               <Box mr={1}>
@@ -134,71 +134,71 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
               </Box>
               </Flex>
               </Box>
-        </Flex>*/}
-        <Text my="3">Deposit your ETH into the pool and get a token that represents the same value. That token can be used by the recipient address to withdraw your deposit.</Text>
-        <Form.Field
-          validated={depForumParams.validEthAddress}
-          label='Recipient Ethereum address' width={1}
-        >
-          <Form.Input
-            type='text'
-            placeholder='e.g. 0x53Nd...2Eth'
-            required
-            width={1}
-            value={depForumParams.targetEthAddress}
-            onChange={(e) => {
+        </Flex> */}
+          <Text my='3'>Deposit your ETH into the pool and get a token that represents the same value. That token can be used by the recipient address to withdraw your deposit.</Text>
+          <Form.Field
+            validated={depForumParams.validEthAddress}
+            label='Recipient Ethereum address' width={1}
+          >
+            <Form.Input
+              type='text'
+              placeholder='e.g. 0x53Nd...2Eth'
+              required
+              width={1}
+              value={depForumParams.targetEthAddress}
+              onChange={(e) => {
               // For the little checkmark
-              if (e.target.value.indexOf('0x') === 0 && e.target.value.length === 42) {
-                e.target.parentNode.classList.add('was-validated')
-              } else {
-                e.target.parentNode.classList.remove('was-validated')
-              }
+                if (e.target.value.indexOf('0x') === 0 && e.target.value.length === 42) {
+                  e.target.parentNode.classList.add('was-validated')
+                } else {
+                  e.target.parentNode.classList.remove('was-validated')
+                }
 
-              setDepForumParams(
-                Object.assign(
-                  {},
-                  depForumParams,
-                  {
-                    targetEthAddress: e.target.value,
-                    validEthAddress: e.target.value.indexOf('0x') === 0 && e.target.value.length === 42
-                  })
-              )
-            }}
-          />
-        </Form.Field>
-        <Form.Field label='ETH amount' width={1}>
-          <Select
-            items={[
-              '2',
-              '4',
-              '8',
-              '16',
-              '32'
-            ]}
-            required
-            width={1}
-            onChange={(e) => {
-              setDepForumParams(
-                Object.assign(
-                  {},
-                  depForumParams,
-                  { targetEthAmount: e.target.value })
-              )
-            }}
-          />
-        </Form.Field>
-        <Flex alignItems="center" my="3">
-          <Box>
-            <Icon size="20" mr={1} name="Info" />
-          </Box>
-          <Box>
-            <Text italic>You will need to pay a small transaction fee to deposit ETH.</Text>
-          </Box>
-        </Flex>
+                setDepForumParams(
+                  Object.assign(
+                    {},
+                    depForumParams,
+                    {
+                      targetEthAddress: e.target.value,
+                      validEthAddress: e.target.value.indexOf('0x') === 0 && e.target.value.length === 42
+                    })
+                )
+              }}
+            />
+          </Form.Field>
+          <Form.Field label='ETH amount' width={1}>
+            <Select
+              items={[
+                '2',
+                '4',
+                '8',
+                '16',
+                '32'
+              ]}
+              required
+              width={1}
+              onChange={(e) => {
+                setDepForumParams(
+                  Object.assign(
+                    {},
+                    depForumParams,
+                    { targetEthAmount: e.target.value })
+                )
+              }}
+            />
+          </Form.Field>
+          <Flex alignItems='center' my='3'>
+            <Box>
+              <Icon size='20' mr={1} name='Info' />
+            </Box>
+            <Box>
+              <Text italic>You will need to pay a small transaction fee to deposit ETH.</Text>
+            </Box>
+          </Flex>
 
-        <Button type='submit' width={1} disabled={noWeb3 || noContractInstance || !depForumParams.validEthAddress}>
+          <Button type='submit' width={1} disabled={noWeb3 || noContractInstance || !depForumParams.validEthAddress}>
           Deposit ETH
-        </Button>
+          </Button>
         </Card>
       </Form>
 
@@ -209,11 +209,11 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
               {
                 modalParams.heiTokenFinal === null
                   ? <Loader style={{ margin: 'auto' }} size='10rem' />
-                  : <Icon style={{ margin: 'auto' }} color="#29B236" size="80" name="CheckCircle" />
+                  : <Icon style={{ margin: 'auto' }} color='#29B236' size='80' name='CheckCircle' />
               }
 
               <br />
-              <Text py={3} borderBottom={1} borderColor={'#E8E8E8'} mb="3" style={{ textAlign: 'center' }}>
+              <Text py={3} borderBottom={1} borderColor={'#E8E8E8'} mb='3' style={{ textAlign: 'center' }}>
                 {
                   modalParams.heiTokenFinal === null
                     ? 'Depositing ETH... make sure you have confirmed the deposit in your wallet'
@@ -221,50 +221,50 @@ const DepositPage = (props: { dappGateway: DappGateway }) => {
                 }
               </Text>
 
-                <Heading.h3 my="3" fontSize="3">Next up</Heading.h3>
-                <Text>
+              <Heading.h3 my='3' fontSize='3'>Next up</Heading.h3>
+              <Text>
                 Send this token to your recipient. They'll need it to withdraw their funds. </Text>
               <br />
 
-              <PublicAddress width={1} label="Hei token" address={
+              <PublicAddress width={1} label='Hei token' address={
                 modalParams.heiTokenFinal === null ? modalParams.heiTokenEst : modalParams.heiTokenFinal
               } onChange={() => {}} />
             </div>
             <Box>
-            <Flash mb={3} variant="warning">
-              <Flex alignItems="center">
-                <Box mr={1}>
-                  <Icon name="Warning" />
-                </Box>
-                <Box mx={3}>There is no way to recover a lost token. If you lose this token, you'll lose your ETH.</Box>
-              </Flex>
-            </Flash>
-            <Checkbox
-              label='I have saved/sent the Hei token'
-              mb={3}
-              onChange={(e) => { setModalParams(Object.assign({}, modalParams, { acknowledgeClose: e.target.checked })) }}
-            />
-            {
-              modalParams.acknowledgeClose
-                ? <Button
-                  position={'absolute'}
-                  top={0}
-                  width={1}
-                  onClick={() => {
+              <Flash mb={3} variant='warning'>
+                <Flex alignItems='center'>
+                  <Box mr={1}>
+                    <Icon name='Warning' />
+                  </Box>
+                  <Box mx={3}>There is no way to recover a lost token. If you lose this token, you'll lose your ETH.</Box>
+                </Flex>
+              </Flash>
+              <Checkbox
+                label='I have saved/sent the Hei token'
+                mb={3}
+                onChange={(e) => { setModalParams(Object.assign({}, modalParams, { acknowledgeClose: e.target.checked })) }}
+              />
+              {
+                modalParams.acknowledgeClose
+                  ? <Button
+                    position={'absolute'}
+                    top={0}
+                    width={1}
+                    onClick={() => {
                     // Only allow close if tx is complete
                     // and user acknowledged close
-                    if (modalParams.heiToken !== null && modalParams.acknowledgeClose) {
-                      setModalParams(Object.assign({}, modalParams, { isOpen: false }))
-                    }
-                  }}
-                >Close</Button>
-                : <Button.Outline
-                  position={'absolute'}
-                  top={0}
-                  width={1}
-                  disabled
-                >Confirm you've copied the token</Button.Outline>
-            }
+                      if (modalParams.heiToken !== null && modalParams.acknowledgeClose) {
+                        setModalParams(Object.assign({}, modalParams, { isOpen: false }))
+                      }
+                    }}
+                  >Close</Button>
+                  : <Button.Outline
+                    position={'absolute'}
+                    top={0}
+                    width={1}
+                    disabled
+                  >Confirm you've copied the token</Button.Outline>
+              }
             </Box>
           </Box>
 
