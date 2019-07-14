@@ -5,6 +5,7 @@ import { append0x } from '../utils/helper'
 import React, { useState } from 'react'
 import { Form, Radio, Field, Flex, Input, Blockie, EthAddress, Link, Icon, Modal, Flash, Card, Box, Button, Loader, Text, Heading, Tooltip } from 'rimble-ui'
 import { DappGateway } from '../types/DappGateway'
+import axios from 'axios'
 
 // BigNumber 0
 const bnZero = new BN('0', 10)
@@ -25,7 +26,7 @@ const WITHDRAWALSTATES = {
   Withdrawn: 9
 }
 
-const WithdrawPage = (props: { dappGateway: DappGateway }) => {
+const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noContractInstance: Boolean }) => {
   const { dappGateway } = props
 
   const [ringParticipants, setRingParticipants] = useState({
@@ -325,7 +326,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
         Please open a new issue with the error description below.
       </a>
       <br />
-      Unknown error occured: <br />{ unknownErrorStr }
+      An error occured: <br />{ unknownErrorStr }
     </div>
   }
 
@@ -448,67 +449,102 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
           )
 
           // Create the transaction
+          const c0 = append0x(signature[0].toString('hex'))
+          const keyImage = [
+            append0x(signature[2][0].toString('hex')),
+            append0x(signature[2][1].toString('hex'))
+          ]
+          const s = signature[1].map(x => append0x(x.toString('hex')))
+
           const dataBytecode = heiswapInstance
             .methods
             .withdraw(
               ethAddress,
               ethAmount,
               ringIdx,
-              append0x(signature[0].toString('hex')),
-              [
-                append0x(signature[2][0].toString('hex')),
-                append0x(signature[2][1].toString('hex'))
-              ],
-              signature[1].map(x => append0x(x.toString('hex')))
+              c0,
+              keyImage,
+              s
             ).encodeABI()
 
           // Just send the dataBytecode to a relayer
           // TFW can't signTransaction with web3.eth.signTransaction
           // web3 is so broken, the versioning is so fucked,
           // the docs are so outdated. Fucking hell.
-          // if (useRelayer) {
-          //   try {
-          //     // TODO: Post dataBytecode to relayer
-          //   } catch (exc) {
-          //   }
-          // } else {
-          // Broadcast the transaction otherwise
-          try {
-            const gas = await web3.eth.estimateGas({
-              to: heiswapInstance._address,
-              data: dataBytecode
-            })
+          if (useRelayer) {
+            const relayerURL = useDefaultRelayer ? 'https://relayer.heiswap.exchange' : customerRelayerURL
+            try {
+              const resp = await axios.post(relayerURL, {
+                receiver: ethAddress,
+                ethAmount,
+                ringIdx,
+                c0,
+                keyImage,
+                s
+              })
 
-            const tx = {
-              from: ethAddress,
-              to: heiswapInstance._address,
-              gas,
-              data: dataBytecode,
-              nonce: await web3.eth.getTransactionCount(ethAddress)
+              const respJson: { errorMessage: String, txHash: String } = resp.data
+
+              setTxReceipt({ transactionHash: respJson.txHash })
+              setWithdrawalState(WITHDRAWALSTATES.Withdrawn)
+            } catch (exc) {
+              // Relayer unavailable
+              console.log(exc.response.data.errorMessage)
+              if (exc.response.data.errorMessage === undefined) {
+                setUnknownErrorStr('Unable to reach relayer')
+                setWithdrawalState(WITHDRAWALSTATES.UnknownError)
+                return
+              }
+
+              const errorMessage = exc.response.data.errorMessage
+              if (errorMessage.indexOf('invalid format') !== -1) {
+                setWithdrawalState(WITHDRAWALSTATES.CorruptedToken)
+              } else if (errorMessage.indexOf('EVM revert') !== -1) {
+                // EVM Revert is likely that the key image was used
+                setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
+              } else {
+                setUnknownErrorStr(errorMessage)
+                setWithdrawalState(WITHDRAWALSTATES.UnknownError)
+              }
             }
+          } else {
+            // Broadcast the transaction otherwise
+            try {
+              const gas = await web3.eth.estimateGas({
+                to: heiswapInstance._address,
+                data: dataBytecode
+              })
 
-            const txR = await web3.eth.sendTransaction(tx)
+              const tx = {
+                from: ethAddress,
+                to: heiswapInstance._address,
+                gas,
+                data: dataBytecode,
+                nonce: await web3.eth.getTransactionCount(ethAddress)
+              }
 
-            setTxReceipt(txR)
-            setWithdrawalState(WITHDRAWALSTATES.Withdrawn)
-          } catch (exc) {
-            const excStr = exc.toString()
+              const txR = await web3.eth.sendTransaction(tx)
 
-            if (excStr.indexOf('Signature has been used!') !== 0) {
-              setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
-            } else if (excStr.indexOf('Invalid signature') !== 0) {
-              setWithdrawalState(WITHDRAWALSTATES.InvalidSignature)
-            } else if (excStr.indexOf('Pool isn\'t closed') !== 0) {
-              setWithdrawalState(WITHDRAWALSTATES.RingNotClosed)
-            } else if (excStr.indexOf('All ETH from current pool') !== 0) {
-              setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
-            } else {
-              setUnknownErrorStr(excStr)
-              setWithdrawalState(WITHDRAWALSTATES.UnknownError)
+              setTxReceipt(txR)
+              setWithdrawalState(WITHDRAWALSTATES.Withdrawn)
+            } catch (exc) {
+              const excStr = exc.toString()
+
+              if (excStr.indexOf('Signature has been used!') !== 0) {
+                setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
+              } else if (excStr.indexOf('Invalid signature') !== 0) {
+                setWithdrawalState(WITHDRAWALSTATES.InvalidSignature)
+              } else if (excStr.indexOf('Pool isn\'t closed') !== 0) {
+                setWithdrawalState(WITHDRAWALSTATES.RingNotClosed)
+              } else if (excStr.indexOf('All ETH from current pool') !== 0) {
+                setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
+              } else {
+                setUnknownErrorStr(excStr)
+                setWithdrawalState(WITHDRAWALSTATES.UnknownError)
+              }
             }
           }
         }
-        // }
         )()
       }} width='100%'>
         <Card>

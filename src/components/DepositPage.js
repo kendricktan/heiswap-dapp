@@ -17,7 +17,7 @@ type ModalParams = {
   acknowledgeClose: Boolean
 }
 
-const DepositPage = (props: { dappGateway: DappGateway }) => {
+const DepositPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noContractInstance: Boolean }) => {
   const { dappGateway } = props
 
   // Form validation
