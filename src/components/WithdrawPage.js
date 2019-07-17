@@ -12,6 +12,7 @@ const bnZero = new BN('0', 10)
 
 // Possible states
 const WITHDRAWALSTATES = {
+  RelayerUnreachable: -3,
   UnknownError: -2,
   Nothing: -1,
   CorruptedToken: 0,
@@ -319,15 +320,24 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
           </Box>
         </div>
       )
+    } else if (ws === WITHDRAWALSTATES.RelayerUnreachable) {
+      return (
+        <Box>
+          <Heading.h3 my={3} fontSize='4'>Unable to reach relayer</Heading.h3>
+          <Text>Try using a different relayer, you can also <a href='https://github.com/kendricktan/heiswap-relayer'>setup your own relayer</a></Text>
+        </Box>
+      )
     }
 
-    return <div>
-      <a href='https://github.com/kendricktan/heiswap-dapp/issues'>
-        Please open a new issue with the error description below.
-      </a>
-      <br />
-      An error occured: <br />{ unknownErrorStr }
-    </div>
+    return (
+      <Box>
+        <Heading.h3 my={3} fontSize='4'>Unknown Error Occured</Heading.h3>
+        <Text>
+          <a href='https://github.com/kendricktan/heiswap-dapp/issues'>Please open a new issue with the error description below.</a>
+          Description: { unknownErrorStr }
+        </Text>
+      </Box>
+    )
   }
 
   return (
@@ -489,10 +499,8 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
               setWithdrawalState(WITHDRAWALSTATES.Withdrawn)
             } catch (exc) {
               // Relayer unavailable
-              console.log(exc.response.data.errorMessage)
-              if (exc.response.data.errorMessage === undefined) {
-                setUnknownErrorStr('Unable to reach relayer')
-                setWithdrawalState(WITHDRAWALSTATES.UnknownError)
+              if (exc.response === undefined) {
+                setWithdrawalState(WITHDRAWALSTATES.RelayerUnreachable)
                 return
               }
 
@@ -592,7 +600,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
                         onChange={(e) => setUseDefaultRelayer(!e.target.checked)}
                       />
                       <Input
-                        placeholder='Relayer URL'
+                        placeholder='http://myrelayer.com:3000'
                         height='2rem'
                         disabled={useDefaultRelayer}
                         width={1}
@@ -601,6 +609,14 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
                       />
                     </div>
                   </Field>
+                  <Flex alignItems='center' my='3'>
+                    <Box>
+                      <Icon size='20' mr={1} name='Info' />
+                    </Box>
+                    <Box>
+                      <Text italic>You will pay a small amount of fees to the relayer for GAS purposes.</Text>
+                    </Box>
+                  </Flex>
                 </div>
                 : <Flex alignItems='center' my='3'>
                   <Box>
