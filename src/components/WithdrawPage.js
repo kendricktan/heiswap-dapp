@@ -3,14 +3,16 @@ import BN from 'bn.js'
 import { Scalar, Point, serialize, h1, bn128 } from '../utils/AltBn128'
 import { append0x } from '../utils/helper'
 import React, { useState } from 'react'
-import { Form, Flex, Blockie, EthAddress, Link, Icon, Modal, Flash, Card, Box, Button, Loader, Text, Heading, Tooltip } from 'rimble-ui'
+import { Form, Radio, Field, Flex, Input, Blockie, EthAddress, Link, Icon, Modal, Flash, Card, Box, Button, Loader, Text, Heading, Tooltip } from 'rimble-ui'
 import { DappGateway } from '../types/DappGateway'
+import axios from 'axios'
 
 // BigNumber 0
 const bnZero = new BN('0', 10)
 
 // Possible states
 const WITHDRAWALSTATES = {
+  RelayerUnreachable: -3,
   UnknownError: -2,
   Nothing: -1,
   CorruptedToken: 0,
@@ -25,7 +27,7 @@ const WITHDRAWALSTATES = {
   Withdrawn: 9
 }
 
-const WithdrawPage = (props: { dappGateway: DappGateway }) => {
+const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noContractInstance: Boolean }) => {
   const { dappGateway } = props
 
   const [ringParticipants, setRingParticipants] = useState({
@@ -36,7 +38,9 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
   const [txReceipt, setTxReceipt] = useState(null)
   const [forceCloseBlocksLeft, setForceCloseBlocksLeft] = useState(-1)
   const [heiToken, setHeiToken] = useState('')
-  // const [useRelayer, setUseRelayer] = useState(false)
+  const [useRelayer, setUseRelayer] = useState(true)
+  const [useDefaultRelayer, setUseDefaultRelayer] = useState(true)
+  const [customerRelayerURL, setCustomRelayerURL] = useState('')
   const [openModal, setOpenModal] = useState(false)
   const [withdrawalState, setWithdrawalState] = useState(WITHDRAWALSTATES.Nothing)
 
@@ -316,15 +320,24 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
           </Box>
         </div>
       )
+    } else if (ws === WITHDRAWALSTATES.RelayerUnreachable) {
+      return (
+        <Box>
+          <Heading.h3 my={3} fontSize='4'>Unable to reach relayer</Heading.h3>
+          <Text>Try using a different relayer, you can also <a href='https://github.com/kendricktan/heiswap-relayer'>setup your own relayer</a></Text>
+        </Box>
+      )
     }
 
-    return <div>
-      <a href='https://github.com/kendricktan/heiswap-dapp/issues'>
-        Please open a new issue with the error description below.
-      </a>
-      <br />
-      Unknown error occured: <br />{ unknownErrorStr }
-    </div>
+    return (
+      <Box>
+        <Heading.h3 my={3} fontSize='4'>Unknown Error Occured</Heading.h3>
+        <Text>
+          <a href='https://github.com/kendricktan/heiswap-dapp/issues'>Please open a new issue with the error description below.</a>
+          Description: { unknownErrorStr }
+        </Text>
+      </Box>
+    )
   }
 
   return (
@@ -446,67 +459,100 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
           )
 
           // Create the transaction
+          const c0 = append0x(signature[0].toString('hex'))
+          const keyImage = [
+            append0x(signature[2][0].toString('hex')),
+            append0x(signature[2][1].toString('hex'))
+          ]
+          const s = signature[1].map(x => append0x(x.toString('hex')))
+
           const dataBytecode = heiswapInstance
             .methods
             .withdraw(
               ethAddress,
               ethAmount,
               ringIdx,
-              append0x(signature[0].toString('hex')),
-              [
-                append0x(signature[2][0].toString('hex')),
-                append0x(signature[2][1].toString('hex'))
-              ],
-              signature[1].map(x => append0x(x.toString('hex')))
+              c0,
+              keyImage,
+              s
             ).encodeABI()
 
           // Just send the dataBytecode to a relayer
           // TFW can't signTransaction with web3.eth.signTransaction
           // web3 is so broken, the versioning is so fucked,
           // the docs are so outdated. Fucking hell.
-          // if (useRelayer) {
-          //   try {
-          //     // TODO: Post dataBytecode to relayer
-          //   } catch (exc) {
-          //   }
-          // } else {
-          // Broadcast the transaction otherwise
-          try {
-            const gas = await web3.eth.estimateGas({
-              to: heiswapInstance._address,
-              data: dataBytecode
-            })
+          if (useRelayer) {
+            const relayerURL = useDefaultRelayer ? 'https://relayer.heiswap.exchange' : customerRelayerURL
+            try {
+              const resp = await axios.post(relayerURL, {
+                receiver: ethAddress,
+                ethAmount,
+                ringIdx,
+                c0,
+                keyImage,
+                s
+              })
 
-            const tx = {
-              from: ethAddress,
-              to: heiswapInstance._address,
-              gas,
-              data: dataBytecode,
-              nonce: await web3.eth.getTransactionCount(ethAddress)
+              const respJson: { errorMessage: String, txHash: String } = resp.data
+
+              setTxReceipt({ transactionHash: respJson.txHash })
+              setWithdrawalState(WITHDRAWALSTATES.Withdrawn)
+            } catch (exc) {
+              // Relayer unavailable
+              if (exc.response === undefined) {
+                setWithdrawalState(WITHDRAWALSTATES.RelayerUnreachable)
+                return
+              }
+
+              const errorMessage = exc.response.data.errorMessage
+              if (errorMessage.indexOf('invalid format') !== -1) {
+                setWithdrawalState(WITHDRAWALSTATES.CorruptedToken)
+              } else if (errorMessage.indexOf('EVM revert') !== -1) {
+                // EVM Revert is likely that the key image was used
+                setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
+              } else {
+                setUnknownErrorStr(errorMessage)
+                setWithdrawalState(WITHDRAWALSTATES.UnknownError)
+              }
             }
+          } else {
+            // Broadcast the transaction otherwise
+            try {
+              const gas = await web3.eth.estimateGas({
+                to: heiswapInstance._address,
+                data: dataBytecode
+              })
 
-            const txR = await web3.eth.sendTransaction(tx)
+              const tx = {
+                from: ethAddress,
+                to: heiswapInstance._address,
+                gas,
+                data: dataBytecode,
+                nonce: await web3.eth.getTransactionCount(ethAddress)
+              }
 
-            setTxReceipt(txR)
-            setWithdrawalState(WITHDRAWALSTATES.Withdrawn)
-          } catch (exc) {
-            const excStr = exc.toString()
+              const txR = await web3.eth.sendTransaction(tx)
 
-            if (excStr.indexOf('Signature has been used!') !== 0) {
-              setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
-            } else if (excStr.indexOf('Invalid signature') !== 0) {
-              setWithdrawalState(WITHDRAWALSTATES.InvalidSignature)
-            } else if (excStr.indexOf('Pool isn\'t closed') !== 0) {
-              setWithdrawalState(WITHDRAWALSTATES.RingNotClosed)
-            } else if (excStr.indexOf('All ETH from current pool') !== 0) {
-              setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
-            } else {
-              setUnknownErrorStr(excStr)
-              setWithdrawalState(WITHDRAWALSTATES.UnknownError)
+              setTxReceipt(txR)
+              setWithdrawalState(WITHDRAWALSTATES.Withdrawn)
+            } catch (exc) {
+              const excStr = exc.toString()
+
+              if (excStr.indexOf('Signature has been used!') !== 0) {
+                setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
+              } else if (excStr.indexOf('Invalid signature') !== 0) {
+                setWithdrawalState(WITHDRAWALSTATES.InvalidSignature)
+              } else if (excStr.indexOf('Pool isn\'t closed') !== 0) {
+                setWithdrawalState(WITHDRAWALSTATES.RingNotClosed)
+              } else if (excStr.indexOf('All ETH from current pool') !== 0) {
+                setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
+              } else {
+                setUnknownErrorStr(excStr)
+                setWithdrawalState(WITHDRAWALSTATES.UnknownError)
+              }
             }
           }
         }
-        // }
         )()
       }} width='100%'>
         <Card>
@@ -529,22 +575,59 @@ const WithdrawPage = (props: { dappGateway: DappGateway }) => {
               <Link>I don't have a token</Link>
             </Tooltip>
           </Box>
-          {/* <Box>
-          <Form.Check
-            checked={useRelayer}
-            label={<span>Retrieve via relayer. <a href='/faq'>More Info</a></span>}
-            mb={3}
-            onChange={(e) => setUseRelayer(e.target.checked)}
-          />
-        </Box> */}
-          <Flex alignItems='center' my='3'>
-            <Box>
-              <Icon size='20' mr={1} name='Info' />
-            </Box>
-            <Box>
-              <Text italic>You will need to pay a small transaction fee to withdraw ETH.</Text>
-            </Box>
-          </Flex>
+          <Box my='3'>
+            <Form.Check
+              checked={useRelayer}
+              label={`Use relayer to withdraw`}
+              mb={3}
+              onChange={(e) => setUseRelayer(e.target.checked)}
+            />
+          </Box>
+          <Box my='3'>
+            {
+              useRelayer
+                ? <div>
+                  <Field label='Select your relayer'>
+                    <div>
+                      <Radio label='Default - relayer.heiswap.exchange'
+                        my='1'
+                        checked={useDefaultRelayer}
+                        onChange={(e) => setUseDefaultRelayer(e.target.checked)}
+                      />
+                      <Radio label='Custom'
+                        my='1'
+                        checked={!useDefaultRelayer}
+                        onChange={(e) => setUseDefaultRelayer(!e.target.checked)}
+                      />
+                      <Input
+                        placeholder='http://myrelayer.com:3000'
+                        height='2rem'
+                        disabled={useDefaultRelayer}
+                        width={1}
+                        value={customerRelayerURL}
+                        onChange={(e) => setCustomRelayerURL(e.target.value)}
+                      />
+                    </div>
+                  </Field>
+                  <Flex alignItems='center' my='3'>
+                    <Box>
+                      <Icon size='20' mr={1} name='Info' />
+                    </Box>
+                    <Box>
+                      <Text italic>You will pay a small amount of fees to the relayer for GAS purposes.</Text>
+                    </Box>
+                  </Flex>
+                </div>
+                : <Flex alignItems='center' my='3'>
+                  <Box>
+                    <Icon size='20' mr={1} name='Info' />
+                  </Box>
+                  <Box>
+                    <Text italic>You will need some ETH in your withdrawal address to pay for GAS.</Text>
+                  </Box>
+                </Flex>
+            }
+          </Box>
           <Button type='submit' width={1} disabled={noWeb3 || noContractInstance}>
             Withdraw ETH
           </Button>

@@ -13,7 +13,7 @@ type StatusPageModalParams = {
   blocksLeftForForceClose: Number
 }
 
-const StatusPage = (props: { dappGateway: DappGateway }) => {
+const StatusPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noContractInstance: Boolean }) => {
   const { dappGateway } = props
 
   const [heiToken, setHeiToken] = useState('')
