@@ -187,7 +187,7 @@ contract Heiswap {
 
         // Send ETH to receiver
         // Calculate gasUsage fees
-        uint256 gasUsed = startGas - gasleft();
+        uint256 gasUsed = (startGas - gasleft()) * tx.gasprice;
 
         // Calculate relayer fees (1.33%)
         uint256 relayerFees = (withdrawEther / 75);
