@@ -32,11 +32,11 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
 
   const [ringParticipants, setRingParticipants] = useState({
     deposited: 0,
-    withdrawn: 0
+    withdrawn: 0,
+    participantsRequired: 0
   })
   const [unknownErrorStr, setUnknownErrorStr] = useState('')
   const [txReceipt, setTxReceipt] = useState(null)
-  const [forceCloseBlocksLeft, setForceCloseBlocksLeft] = useState(-1)
   const [heiToken, setHeiToken] = useState('')
   const [useRelayer, setUseRelayer] = useState(true)
   const [useDefaultRelayer, setUseDefaultRelayer] = useState(true)
@@ -84,189 +84,25 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
         </div>
       )
     } else if (ws === WITHDRAWALSTATES.RingNotClosed) {
-      // User can close it themselves
-      if (forceCloseBlocksLeft === 0) {
-        // Use cannot close it if deposited < 2
-        if (ringParticipants.deposited < 2) {
-          return (
-            <div>
-              <Box>
-                <Heading.h3 my='3' fontSize='4'>Can't withdraw ETH yet</Heading.h3>
-                <Text>Your ETH is the only ETH currently in the pool so your withdrawal won't be private. Please wait until more ETH has been deposited.</Text>
+      return (
+        <div>
+          <Box>
+            <Heading.h3 my='3' fontSize='4'>Not Enough Participants</Heading.h3>
+            <Text>To get your ETH, you'll need to wait for more participants to join. </Text>
+            <Flash my={3}>
+              The pool currently has {ringParticipants.deposited}/{ringParticipants.participantsRequired} ETH participants(s).
+            </Flash>
+            <Flex mt={4} justifyContent='space-between'>
+              <Box ml={2} width={1 / 2}>
+                <Button.Outline
+                  onClick={() => setOpenModal(false)}
+                  width={1}>Wait
+                </Button.Outline>
               </Box>
-            </div>
-          )
-        }
-
-        return (
-          <div>
-            <Box>
-              <Heading.h3 my='3' fontSize='4'>Close pool and withdraw ETH?</Heading.h3>
-              <Text>To get your ETH, you'll need to close the current pool. </Text>
-              <Flash my={3}>
-              Your ETH is currently mixed in with a pool of {ringParticipants.deposited} ETH deposit(s).
-              </Flash>
-              {
-                ringParticipants.deposited <= 1
-                  ? <Text>If you close the pool now your withdrawal will <strong>not</strong> be private.</Text>
-                  : ringParticipants.deposited <= 3
-                    ? <Text>If you close the pool now your withdrawal will be <strong>somewhat</strong> private. For more privacy, wait for the pool to get bigger.</Text>
-                    : <Text>Withdrawing your ETH will be <strong>completely</strong> private.</Text>
-              }
-              <Text italic my={3}>Closing the pool will cost you a small transaction fee</Text>
-              <Flex mt={4} justifyContent='space-between'>
-                <Box mr={2} width={1 / 2}>
-                  <Button
-                    width={1}
-                    onClick={() => {
-                      (async () => {
-                        // Reset state
-                        setWithdrawalState(WITHDRAWALSTATES.ForceClosingRing)
-
-                        // Invalid heiToken
-                        const { ethAddress, heiswapInstance, web3 } = dappGateway
-
-                        // eslint-disable-next-line no-unused-vars
-                        const [ethAmount, ringIdx, randomSk] = heiToken.split('-').slice(1)
-
-                        // Checks if ring is closed
-                        const ringHash = await heiswapInstance
-                          .methods
-                          .getRingHash(ethAmount, ringIdx)
-                          .call()
-
-                        const ringHashBuf = Buffer.from(
-                          ringHash.slice(2), // Remove the '0x'
-                          'hex'
-                        )
-
-                        // Get Public Keys
-                        const publicKeys: [[String, String]] = await heiswapInstance
-                          .methods
-                          .getPublicKeys(ethAmount, ringIdx)
-                          .call()
-
-                        // Convert to array of Point
-                        const publicKeysBN: [Point] = publicKeys
-                          .map(x => {
-                            return [
-                              // Slice the '0x'
-                              new BN(Buffer.from(x[0].slice(2), 'hex')),
-                              new BN(Buffer.from(x[1].slice(2), 'hex'))
-                            ]
-                          })
-                          .filter(x => x[0].cmp(bnZero) !== 0 && x[1].cmp(bnZero) !== 0)
-
-                        if (publicKeysBN.length < 2) {
-                          setWithdrawalState(WITHDRAWALSTATES.RingNotEnoughParticipantsToClose)
-                          return
-                        }
-
-                        // Check if user is able to generate any one of these public keys
-                        const stealthSk: Scalar = h1(
-                          serialize([randomSk, ethAddress])
-                        )
-                        const stealthPk: Point = bn128.ecMulG(stealthSk)
-
-                        let secretIdx = 0
-                        let canSign = false
-                        for (let i = 0; i < publicKeysBN.length; i++) {
-                          const curPubKey = publicKeysBN[i]
-
-                          if (curPubKey[0].cmp(stealthPk[0]) === 0 && curPubKey[1].cmp(stealthPk[1]) === 0) {
-                            secretIdx = i
-                            canSign = true
-                            break
-                          }
-                        }
-
-                        if (!canSign) {
-                          setWithdrawalState(WITHDRAWALSTATES.InvalidSignature)
-                          return
-                        }
-
-                        // Create signature
-                        const signature = bn128.ringSign(
-                          ringHashBuf,
-                          publicKeysBN,
-                          stealthSk,
-                          secretIdx
-                        )
-
-                        // Construct bytecode
-                        const dataBytecode = heiswapInstance
-                          .methods
-                          .forceCloseRing(
-                            ethAmount,
-                            ringIdx,
-                            append0x(signature[0].toString('hex')),
-                            [
-                              append0x(signature[2][0].toString('hex')),
-                              append0x(signature[2][1].toString('hex'))
-                            ],
-                            signature[1].map(x => append0x(x.toString('hex')))
-                          ).encodeABI()
-
-                        // Just send the dataBytecode to a relayer
-                        // TFW can't signTransaction with web3.eth.signTransaction
-                        // web3 is so broken, the versioning is so fucked,
-                        // the docs are so outdated. Fucking hell.
-                        // if (useRelayer) {
-                        //   try {
-                        //     // TODO: Post dataBytecode to relayer
-                        //   } catch (exc) {
-                        //   }
-                        // } else {
-                        // Broadcast the transaction otherwise
-                        try {
-                          const gas = await web3.eth.estimateGas({
-                            to: heiswapInstance._address,
-                            data: dataBytecode
-                          })
-
-                          const tx = {
-                            from: ethAddress,
-                            to: heiswapInstance._address,
-                            gas,
-                            data: dataBytecode,
-                            nonce: await web3.eth.getTransactionCount(ethAddress)
-                          }
-
-                          const txR = await web3.eth.sendTransaction(tx)
-
-                          setTxReceipt(txR)
-                          setWithdrawalState(WITHDRAWALSTATES.SuccessCloseRing)
-                        } catch (exc) {
-                          setWithdrawalState(WITHDRAWALSTATES.FailedCloseRing)
-                        }
-                      }
-                      // }
-                      )()
-                    }}>
-                Close pool
-                  </Button>
-                </Box>
-                <Box ml={2} width={1 / 2}>
-                  <Button.Outline
-                    onClick={() => setOpenModal(false)}
-                    width={1}>Wait
-                  </Button.Outline>
-                </Box>
-              </Flex>
-            </Box>
-          </div>
-
-        )
-      } else {
-        return (
-          <div>
-            <Text>
-              Ring isn't closed yet. <br />
-              You can manually close it in {forceCloseBlocksLeft} number of blocks.
-            </Text>
-          </div>
-        )
-      }
+            </Flex>
+          </Box>
+        </div>
+      )
     } else if (ws === WITHDRAWALSTATES.RingNotEnoughParticipantsToClose) {
       return (
         <div>
@@ -381,29 +217,22 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
           // If ring hash isn't closed
           // 32 bytes (64 chars + 2 chars ('0x')))
           if (ringHash.length !== 66) {
-            const blocksLeftStr = await heiswapInstance
+            const participantsRequired = await heiswapInstance
               .methods
-              .getForceCloseBlocksLeft(ethAmount, ringIdx)
+              .getRingMaxParticipants()
               .call()
 
-            const blocksLeft = parseInt(blocksLeftStr)
+            const curParticipants = await heiswapInstance
+              .methods
+              .getParticipants(ethAmount, ringIdx)
+              .call()
 
-            // If blocksLeft === 0
-            // User can close the ring, display information
-            // regarding their privacy before they close it manually
-            if (blocksLeft === 0) {
-              const curParticipants = await heiswapInstance
-                .methods
-                .getParticipants(ethAmount, ringIdx)
-                .call()
+            setRingParticipants({
+              deposited: curParticipants[0],
+              withdrawn: curParticipants[1],
+              participantsRequired
+            })
 
-              setRingParticipants({
-                deposited: curParticipants[0],
-                withdrawn: curParticipants[1]
-              })
-            }
-
-            setForceCloseBlocksLeft(blocksLeft)
             setWithdrawalState(WITHDRAWALSTATES.RingNotClosed)
             return
           }

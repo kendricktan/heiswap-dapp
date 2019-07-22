@@ -7,16 +7,14 @@ contract Heiswap {
     // Events
     event Deposited(address, uint256 etherAmount, uint256 idx);
 
+    // Default Relayer Address
+    address payable public relayerAddress = 0x20a4b066fc4F70b0245B43e2F5a781C6d1030748;
+
     // Maximum number of participants in a ring
-    uint256 constant ringMaxParticipants = 5;
-
+    uint256 constant ringMaxParticipants = 6;
+    
     struct Ring {
-        /* NOTE: Once someone signs a transaction
-                 then no one else is able to deposit
-                 money into the ring anymore
-        */
-
-        // When was thing block created
+        // Ring created on block number X
         uint256 createdBlockNumber;
 
         // Ring hash will be available once
@@ -33,13 +31,13 @@ contract Heiswap {
 
         // Number of participants who've deposited
         uint8 dParticipantsNo;
+
         // The Public Key (stealth addresses)
-        // These are in bytes because web3.js is
-        // buggy with big int
         mapping (uint256 => uint256[2]) publicKeys;
 
         // Number of participants who've withdrawn
         uint8 wParticipantsNo;
+
         // Key Images of participants who have withdrawn
         // Used to determine if a participant is trying to
         // double withdraw
@@ -47,7 +45,7 @@ contract Heiswap {
     }
 
     // Fixed amounts allowed to be inserted into the rings
-    uint256[10] allowedAmounts = [ 1 ether, 2 ether, 4 ether, 8 ether, 16 ether, 32 ether ];
+    uint256[10] allowedAmounts = [ 1 ether, 2 ether, 4 ether, 8 ether, 16 ether, 32 ether, 64 ether ];
 
     // Mimics dynamic 'lists'
     // allowedAmount => numberOfRings (in the current amount)
@@ -56,11 +54,23 @@ contract Heiswap {
     // allowedAmount => ringIndex => Ring
     mapping (uint256 => mapping(uint256 => Ring)) rings;
 
-
     function deposit(uint256[2] memory publicKey) public payable
     {
         // Get amount sent
         uint256 receivedEther = floorEtherAndCheck(msg.value);
+
+        // Returns non-exact value ETH
+        // Gets the value of the first decimal place
+        // in ETH deposited
+        // i.e. 2.1 will give 1, 2.6 will give 6
+        // if it's greater than 1, then refund the 
+        // amounts (we'll count 0.1 ETH as a donation to our relayer ;))
+        uint256 etherDecimalVal = (msg.value / (1 ether / 10)) % 10;
+        if (etherDecimalVal > 1) {
+            uint256 refundEtherDecimalVal = (etherDecimalVal - 1) * (1 ether / 10);
+            relayerAddress.transfer(1 ether / 10);
+            msg.sender.transfer(refundEtherDecimalVal);
+        }
 
         // Gets the current ring for the amounts
         uint256 curIndex = ringsNo[receivedEther];
@@ -120,6 +130,10 @@ contract Heiswap {
         // Gets the current ring, given the amount and idx
         Ring storage ring = rings[withdrawEther][index];
 
+        if (receiver == 0x0000000000000000000000000000000000000000) {
+            revert("No zero address receiver");
+        }
+
         // If everyone has withdrawn
         if (ring.wParticipantsNo >= ringMaxParticipants) {
             revert("All funds from current Ring has been withdrawn");
@@ -170,73 +184,20 @@ contract Heiswap {
         ring.wParticipantsNo += 1;
 
         // Send ETH to receiver
-        // Calculate fees (1.33%) + gasUsage fees
-        uint256 gasUsed = startGas - gasleft();
-        uint256 fees = (withdrawEther / 75) + gasUsed + startGas;
+        // Calculate gasUsage fees
+        uint256 gasUsed = (startGas - gasleft()) * tx.gasprice;
 
-        // Relayer gets (1%) of the xferred value + compensated for gas usage
+        // Calculate relayer fees (1.33%)
+        uint256 relayerFees = (withdrawEther / 75);
+
+        // Total fees
+        uint256 fees = gasUsed + relayerFees;
+
+        // Relayer gets compensated
         msg.sender.transfer(fees);
 
         // Reciever then gets the remaining ETH
         receiver.transfer(withdrawEther - fees);
-    }
-
-
-    // If enough blocks has passed, user can manually close the ring.
-    // To force fully close the ring
-    function forceCloseRing(
-        uint256 amount, uint256 index,
-        uint256 c0, uint256[2] memory keyImage, uint256[] memory s
-    ) public
-    {
-        // Get amount sent
-        uint256 receivedEther = floorEtherAndCheck(amount * 1 ether);
-
-        // Gets the current ring for the amounts
-        uint256 curIndex = ringsNo[receivedEther];
-        Ring storage ring = rings[receivedEther][curIndex];
-        
-        // How many blocks have passed
-        uint256 blocksPassed = (block.number - 1 - ring.createdBlockNumber);
-
-        if (ring.dParticipantsNo < 2) {
-            revert("Not enough participants!");
-        }
-
-        if (ring.ringHash != bytes32(0x00)) {
-            revert("Ring is already closed!");
-        }
-
-        // Convert public key to dynamic array
-        uint256[2][] memory publicKeys = new uint256[2][](ring.dParticipantsNo);
-
-        for (uint8 i = 0; i < ring.dParticipantsNo; i++) {
-            publicKeys[i] = [
-                uint256(ring.publicKeys[uint8(i)][0]),
-                uint256(ring.publicKeys[uint8(i)][1])
-            ];
-        }
-
-        // Attempts to verify ring signature
-        // for user to close ring
-        bool signatureVerified = LSAG.verify(
-            abi.encodePacked("closeRing", receivedEther, curIndex),
-            c0,
-            keyImage,
-            s,
-            publicKeys
-        );
-
-        if (!signatureVerified) {
-            revert("Invalid signature");
-        }
-
-        // Close the ring
-        // (Once ring hash is there, it means ring is closed)
-        ring.ringHash = createRingHash(receivedEther / (1 ether), index);
-
-        // Create new ring
-        ringsNo[receivedEther] += 1;
     }
 
     /* Helper functions */
