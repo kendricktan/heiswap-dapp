@@ -20,7 +20,7 @@ before_deploy:
 
 deploy:
   provider: script
-  script: netlify deploy -s $NETLIFY_SITE_ID -a $NETLIFY_ACCESS_TOKEN -p --dir=./build
+  script: netlify deploy -p --dir=./build
   skip_cleanup: true
   on:
     branch: master

@@ -285,7 +285,7 @@ contract Heiswap {
 
     // Gets all addresses in a Ring
     // Converting to Bytes32 cause web3.js has a bug that doesn't convert
-    // Big Num correctly....
+    // BigNum correctly....
     function getPublicKeys(uint256 amountEther, uint256 index) public view
         returns (bytes32[2][ringMaxParticipants] memory)
     {
