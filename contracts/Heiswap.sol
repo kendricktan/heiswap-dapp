@@ -8,18 +8,13 @@ contract Heiswap {
     event Deposited(address, uint256 etherAmount, uint256 idx);
 
     // Default Relayer Address
-    address constant relayerAddress = 0x20a4b066fc4F70b0245B43e2F5a781C6d1030748;
+    address payable public relayerAddress = 0x20a4b066fc4F70b0245B43e2F5a781C6d1030748;
 
     // Maximum number of participants in a ring
     uint256 constant ringMaxParticipants = 6;
-
+    
     struct Ring {
-        /* NOTE: Once someone signs a transaction
-                 then no one else is able to deposit
-                 money into the ring anymore
-        */
-
-        // When was thing block created
+        // Ring created on block number X
         uint256 createdBlockNumber;
 
         // Ring hash will be available once
@@ -36,13 +31,13 @@ contract Heiswap {
 
         // Number of participants who've deposited
         uint8 dParticipantsNo;
+
         // The Public Key (stealth addresses)
-        // These are in bytes because web3.js is
-        // buggy with big int
         mapping (uint256 => uint256[2]) publicKeys;
 
         // Number of participants who've withdrawn
         uint8 wParticipantsNo;
+
         // Key Images of participants who have withdrawn
         // Used to determine if a participant is trying to
         // double withdraw
@@ -50,7 +45,7 @@ contract Heiswap {
     }
 
     // Fixed amounts allowed to be inserted into the rings
-    uint256[10] allowedAmounts = [ 1 ether, 2 ether, 4 ether, 8 ether, 16 ether, 32 ether ];
+    uint256[10] allowedAmounts = [ 1 ether, 2 ether, 4 ether, 8 ether, 16 ether, 32 ether, 64 ether ];
 
     // Mimics dynamic 'lists'
     // allowedAmount => numberOfRings (in the current amount)
@@ -58,7 +53,6 @@ contract Heiswap {
 
     // allowedAmount => ringIndex => Ring
     mapping (uint256 => mapping(uint256 => Ring)) rings;
-
 
     function deposit(uint256[2] memory publicKey) public payable
     {
@@ -196,8 +190,11 @@ contract Heiswap {
         // Calculate relayer fees (1.33%)
         uint256 relayerFees = (withdrawEther / 75);
 
+        // Total fees
+        uint256 fees = gasUsed + relayerFees;
+
         // Relayer gets compensated
-        msg.sender.transfer(gasUsed + relayerFees);
+        msg.sender.transfer(fees);
 
         // Reciever then gets the remaining ETH
         receiver.transfer(withdrawEther - fees);
