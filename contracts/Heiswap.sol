@@ -136,6 +136,10 @@ contract Heiswap {
         // Gets the current ring, given the amount and idx
         Ring storage ring = rings[withdrawEther][index];
 
+        if (receiver == 0x0000000000000000000000000000000000000000) {
+            revert("No zero address receiver");
+        }
+
         // If everyone has withdrawn
         if (ring.wParticipantsNo >= ringMaxParticipants) {
             revert("All funds from current Ring has been withdrawn");
