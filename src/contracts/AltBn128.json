@@ -7012,10 +7012,16 @@
       "links": {},
       "address": "0xb4c1b936EC2e0D590AAc022Be3A6f6D88B85C9B0",
       "transactionHash": "0x6417b867b888cf50e61bfc5cb51300c1b3804c512b942c2f43c2c283b2b6e9ce"
+    },
+    "1563790869025": {
+      "events": {},
+      "links": {},
+      "address": "0x41E9752A97Bd1110Eea2970bD26228C3bF7f3ac8",
+      "transactionHash": "0x5d0cced3384209e909349c81a56729c6db664dde6b9ca2a5fed21e89c2b132b4"
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-07-22T10:24:03.153Z",
+  "updatedAt": "2019-07-22T10:26:04.612Z",
   "devdoc": {
     "methods": {}
   },

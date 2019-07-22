@@ -8759,10 +8759,18 @@
       },
       "address": "0x95AaB682F8Cca2c091c94CfE044045FC244Ca53E",
       "transactionHash": "0xc65dd7e6b988d1a514b0e3e1209abd1985ff551f255201d6b2f09d82e786ff4a"
+    },
+    "1563790869025": {
+      "events": {},
+      "links": {
+        "AltBn128": "0x41E9752A97Bd1110Eea2970bD26228C3bF7f3ac8"
+      },
+      "address": "0x1D8567691BfF22201f196d02828eF5c11de52262",
+      "transactionHash": "0xb672ff9512ca211b17ff707718290e6eb02513b303f48b1a5a778dacc1ff7500"
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-07-22T10:24:03.175Z",
+  "updatedAt": "2019-07-22T10:26:04.619Z",
   "devdoc": {
     "methods": {}
   },
