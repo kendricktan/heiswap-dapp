@@ -256,6 +256,8 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
             })
             .filter(x => x[0].cmp(bnZero) !== 0 && x[1].cmp(bnZero) !== 0)
 
+          console.log(publicKeys)
+
           // Check if user is able to generate any one of these public keys
           const stealthSk: Scalar = h1(
             serialize([randomSk, ethAddress])
@@ -289,11 +291,11 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
 
           // Create the transaction
           const c0 = append0x(signature[0].toString('hex'))
+          const s = signature[1].map(x => append0x(x.toString('hex')))
           const keyImage = [
             append0x(signature[2][0].toString('hex')),
             append0x(signature[2][1].toString('hex'))
           ]
-          const s = signature[1].map(x => append0x(x.toString('hex')))
 
           const dataBytecode = heiswapInstance
             .methods
@@ -306,25 +308,12 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
               s
             ).encodeABI()
 
-          const gas = await web3.eth.estimateGas({
-            to: heiswapInstance._address,
-            data: dataBytecode
-          })
-
-          const tx = {
-            from: ethAddress,
-            to: heiswapInstance._address,
-            gas,
-            data: dataBytecode,
-            nonce: await web3.eth.getTransactionCount(ethAddress)
-          }
-
           // Just send the dataBytecode to a relayer
           // TFW can't signTransaction with web3.eth.signTransaction
           // web3 is so broken, the versioning is so fucked,
           // the docs are so outdated. Fucking hell.
           if (useRelayer) {
-            const relayerURL = useDefaultRelayer ? 'http://localhost:3000' : customerRelayerURL
+            const relayerURL = useDefaultRelayer ? 'https://relayer.heiswap.exchange' : customerRelayerURL
             try {
               // Nicer user flow for withdrawal (has prompts to sign message even through relayer)
               // Also safer since relayer knows address authorized it
@@ -364,8 +353,8 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
                 // EVM Revert is likely that the key image was used
                 setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
               } else if (
-                errorMessage.indexOf('Invalid Message Signature') !== -1
-                || errorMessage.indexOf('Invalid Ring Signature') !== -1
+                errorMessage.indexOf('Invalid Message Signature') !== -1 ||
+                errorMessage.indexOf('Invalid Ring Signature') !== -1
               ) {
                 setWithdrawalState(WITHDRAWALSTATES.InvalidSignature)
               } else {
@@ -376,6 +365,19 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
           } else {
             // Broadcast the transaction otherwise
             try {
+              const gas = await web3.eth.estimateGas({
+                to: heiswapInstance._address,
+                data: dataBytecode
+              })
+
+              const tx = {
+                from: ethAddress,
+                to: heiswapInstance._address,
+                gas,
+                data: dataBytecode,
+                nonce: await web3.eth.getTransactionCount(ethAddress)
+              }
+
               const txR = await web3.eth.sendTransaction(tx)
 
               setTxReceipt(txR)
