@@ -324,7 +324,7 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
           // web3 is so broken, the versioning is so fucked,
           // the docs are so outdated. Fucking hell.
           if (useRelayer) {
-            const relayerURL = useDefaultRelayer ? 'https://relayer.heiswap.exchange' : customerRelayerURL
+            const relayerURL = useDefaultRelayer ? 'http://localhost:3000' : customerRelayerURL
             try {
               // Nicer user flow for withdrawal (has prompts to sign message even through relayer)
               // Also safer since relayer knows address authorized it
@@ -363,6 +363,11 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
               } else if (errorMessage.indexOf('EVM revert') !== -1) {
                 // EVM Revert is likely that the key image was used
                 setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
+              } else if (
+                errorMessage.indexOf('Invalid Message Signature') !== -1
+                || errorMessage.indexOf('Invalid Ring Signature') !== -1
+              ) {
+                setWithdrawalState(WITHDRAWALSTATES.InvalidSignature)
               } else {
                 setUnknownErrorStr(errorMessage)
                 setWithdrawalState(WITHDRAWALSTATES.UnknownError)
