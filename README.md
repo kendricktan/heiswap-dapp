@@ -10,9 +10,9 @@
 
 Heiswap (黑 swap) is an Ethereum transaction mixer that ultilizes parts of [CryptoNote](https://cryptonote.org) to enable zero-knowledge transactions.
 
-It ulitilizes Ring Signatures and pseudo-stealth addresses to achieve its zero-knowledge properties. The [deployed smart contract](https://ropsten.etherscan.io/address/0xbbbf35a4485992520557ae729e21ba35aab178d7) handles the signature verification, while the client is responsible for generating the pseudo-stealth address.
+It ulitilizes Ring Signatures and pseudo-stealth addresses to achieve its zero-knowledge properties. The [deployed smart contract](https://ropsten.etherscan.io/address/0x8AAbE42EeCA45E040fab330fD24eA6746b832Ad2) handles the signature verification, while the client is responsible for generating the pseudo-stealth address.
 
-Ring signatures was only possible on the EVM (gas-wise) due to the recent addition of [EIP198](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-198.md).
+Ring signatures was only possible on the EVM (gas-wise) due to the recent addition of [EIP198](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-198.md) and [EIP1895](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1895.md).
 
 [You can play with the Ropsten version right now](https://heiswap.exchange/).
 

@@ -256,6 +256,8 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
             })
             .filter(x => x[0].cmp(bnZero) !== 0 && x[1].cmp(bnZero) !== 0)
 
+          console.log(publicKeys)
+
           // Check if user is able to generate any one of these public keys
           const stealthSk: Scalar = h1(
             serialize([randomSk, ethAddress])
@@ -289,11 +291,11 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
 
           // Create the transaction
           const c0 = append0x(signature[0].toString('hex'))
+          const s = signature[1].map(x => append0x(x.toString('hex')))
           const keyImage = [
             append0x(signature[2][0].toString('hex')),
             append0x(signature[2][1].toString('hex'))
           ]
-          const s = signature[1].map(x => append0x(x.toString('hex')))
 
           const dataBytecode = heiswapInstance
             .methods
@@ -313,7 +315,18 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
           if (useRelayer) {
             const relayerURL = useDefaultRelayer ? 'https://relayer.heiswap.exchange' : customerRelayerURL
             try {
+              // Nicer user flow for withdrawal (has prompts to sign message even through relayer)
+              // Also safer since relayer knows address authorized it
+              const message = `Get ETH from Heiswap via Relayer (Destination: ${dappGateway.ethAddress})`
+
+              const signedMessage = await web3.eth.personal.sign(
+                message,
+                dappGateway.ethAddress
+              )
+
               const resp = await axios.post(relayerURL, {
+                message,
+                signedMessage,
                 receiver: ethAddress,
                 ethAmount,
                 ringIdx,
@@ -339,6 +352,11 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
               } else if (errorMessage.indexOf('EVM revert') !== -1) {
                 // EVM Revert is likely that the key image was used
                 setWithdrawalState(WITHDRAWALSTATES.SignatureUsed)
+              } else if (
+                errorMessage.indexOf('Invalid Message Signature') !== -1 ||
+                errorMessage.indexOf('Invalid Ring Signature') !== -1
+              ) {
+                setWithdrawalState(WITHDRAWALSTATES.InvalidSignature)
               } else {
                 setUnknownErrorStr(errorMessage)
                 setWithdrawalState(WITHDRAWALSTATES.UnknownError)

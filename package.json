@@ -64,6 +64,7 @@
     "eslint-plugin-react": "^7.14.2",
     "eslint-plugin-standard": "^4.0.0",
     "flow-bin": "^0.102.0",
+    "flow-remove-types": "^2.103.0",
     "ganache-cli": "^6.4.4",
     "truffle": "^5.0.26",
     "truffle-hdwallet-provider": "^1.0.12"
