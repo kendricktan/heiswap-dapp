@@ -169,6 +169,7 @@ const DepositPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noContr
           <Form.Field label='ETH amount' width={1}>
             <Select
               items={[
+                '1',
                 '2',
                 '4',
                 '8',

@@ -306,6 +306,19 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
               s
             ).encodeABI()
 
+          const gas = await web3.eth.estimateGas({
+            to: heiswapInstance._address,
+            data: dataBytecode
+          })
+
+          const tx = {
+            from: ethAddress,
+            to: heiswapInstance._address,
+            gas,
+            data: dataBytecode,
+            nonce: await web3.eth.getTransactionCount(ethAddress)
+          }
+
           // Just send the dataBytecode to a relayer
           // TFW can't signTransaction with web3.eth.signTransaction
           // web3 is so broken, the versioning is so fucked,
@@ -313,7 +326,18 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
           if (useRelayer) {
             const relayerURL = useDefaultRelayer ? 'https://relayer.heiswap.exchange' : customerRelayerURL
             try {
+              // Nicer user flow for withdrawal (has prompts to sign message even through relayer)
+              // Also safer since relayer knows address authorized it
+              const message = `Get ETH from Heiswap via Relayer (Destination: ${dappGateway.ethAddress})`
+
+              const signedMessage = await web3.eth.personal.sign(
+                message,
+                dappGateway.ethAddress
+              )
+
               const resp = await axios.post(relayerURL, {
+                message,
+                signedMessage,
                 receiver: ethAddress,
                 ethAmount,
                 ringIdx,
@@ -347,19 +371,6 @@ const WithdrawPage = (props: { dappGateway: DappGateway, noWeb3: Boolean, noCont
           } else {
             // Broadcast the transaction otherwise
             try {
-              const gas = await web3.eth.estimateGas({
-                to: heiswapInstance._address,
-                data: dataBytecode
-              })
-
-              const tx = {
-                from: ethAddress,
-                to: heiswapInstance._address,
-                gas,
-                data: dataBytecode,
-                nonce: await web3.eth.getTransactionCount(ethAddress)
-              }
-
               const txR = await web3.eth.sendTransaction(tx)
 
               setTxReceipt(txR)
