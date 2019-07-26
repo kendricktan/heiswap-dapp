@@ -118,11 +118,18 @@ contract Heiswap {
     // i.e. there is a ringHash
     function withdraw(
         address payable receiver, uint256 amountEther, uint256 index,
-        uint256 c0, uint256[2] memory keyImage, uint256[] memory s
+        uint256 c0, uint256[2] memory _keyImage, uint256[] memory s
     ) public
     {
         uint i;
         uint256 startGas = gasleft();
+
+        // Prevent double spend attack
+        // https://github.com/kendricktan/heiswap-dapp/issues/17
+        uint256[2] memory keyImage = [
+            AltBn128.modp(_keyImage[0]),
+            AltBn128.modp(_keyImage[1])
+        ];
 
         // Get amount sent in whole number
         uint256 withdrawEther = floorEtherAndCheck(amountEther * 1 ether);

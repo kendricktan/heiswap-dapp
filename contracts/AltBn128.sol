@@ -84,7 +84,8 @@ library AltBn128 {
         }
     }
 
-    // Keep everything contained within this lib
+    /* Helper functions */
+
     function addmodn(uint256 x, uint256 n) public pure
         returns (uint256)
     {
@@ -95,6 +96,12 @@ library AltBn128 {
         returns (uint256)
     {
         return x % N;
+    }
+
+    function modp(uint256 x) public pure
+        returns (uint256)
+    {
+        return x % P;
     }
 
     /*
