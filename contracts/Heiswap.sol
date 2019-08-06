@@ -200,6 +200,11 @@ contract Heiswap {
         // Total fees
         uint256 fees = gasUsed + relayerFees;
 
+        // Make sure fees don't exceed threshold
+        if (fees > withdrawEther) {
+            revert("fees > withdrawEther");
+        }
+
         // Relayer gets compensated
         msg.sender.transfer(fees);
 
